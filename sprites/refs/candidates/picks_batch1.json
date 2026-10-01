@@ -1,0 +1,19 @@
+{
+ "frieza":  [["frieza","03.img"],["frieza","09.img"],["frieza","10.img"]],
+ "hinata":  [["hinata","07.img"],["hinata","09.img"],["hinata","12.img"]],
+ "boruto":  [["boruto","04.img"],["boruto","05.img"],["boruto","06.img"]],
+ "sasuke":  [["sasuke","00.img"],["sasuke","02.img"],["sasuke","13.img"]],
+ "itachi":  [["itachi","01.img"],["itachi","06.img"],["itachi","02.img"]],
+ "obito":   [["obito","10.img"],["obito","03.img"],["obito","13.img"]],
+ "madara":  [["madara","00.img"],["madara","01.img"],["madara","03.img"]],
+ "jiraiya": [["jiraiya","05.img"],["jiraiya","09.img"],["jiraiya","13.img"]],
+ "neji":    [["neji","10.img"],["neji","12.img"],["neji","00.img"]],
+ "gaara":   [["gaara","09.img"],["gaara","08.img"],["gaara","02.img"]],
+ "kakashi": [["kakashi","01.img"],["kakashi","07.img"],["kakashi","11.img"]],
+ "ishida":  [["ishida","02.img"],["ishida","03.img"],["ishida","01.img"]],
+ "aizen":   [["aizen","12.img"],["aizen","11.img"],["aizen","13.img"]],
+ "yhwach":  [["yhwach","00.img"],["yhwach","03.img"],["yhwach","04.img"]],
+ "orihime": [["orihime","04.img"],["orihime","11.img"],["orihime","03.img"]],
+ "byakuya": [["byakuya","12.img"],["byakuya","07.img"],["byakuya","11.img"]],
+ "renji":   [["renji","01.img"],["renji","08.img"],["renji","13.img"]]
+}
