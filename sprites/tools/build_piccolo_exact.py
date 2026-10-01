@@ -15,6 +15,9 @@ alpha = im.getchannel('A')
 q = im.convert('RGB').quantize(colors=20, method=Image.MEDIANCUT, dither=Image.NONE).convert('RGB')
 out = Image.new('RGBA', im.size, (0,0,0,0)); out.paste(q, (0, 0), alpha)
 out = out.crop(out.getbbox()).transpose(Image.FLIP_LEFT_RIGHT)
+import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from seamscale import grow
+out = grow(out, 56, 25, protect_rows=((6,16),), protect_cols=((8,16),))   # widen to roster body width
 out.save(f'{R}/out/piccolo.png')
 b = Image.new('RGBA', out.size, (255,255,255,255)); b.alpha_composite(out)
 b.resize((out.width*16, out.height*16), Image.NEAREST).save(f'{R}/out/piccolo_20x.png')

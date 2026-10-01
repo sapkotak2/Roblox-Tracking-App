@@ -62,5 +62,5 @@ for y, spans in ROWS.items():
 im.save(f'{R}/chars/vegeta_ref_transcribed.png')                 # as in the reference (facing left)
 import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from seamscale import grow
-grow(im.transpose(Image.FLIP_LEFT_RIGHT), 51, 23, protect_rows=((9,21),), protect_cols=((5,16),)).save(f'{R}/out/vegeta.png')  # facing right, roster height
+grow(im.transpose(Image.FLIP_LEFT_RIGHT), 56, 26, protect_rows=((11,21),), protect_cols=((7,14),)).save(f'{R}/out/vegeta.png')  # facing right, roster height
 print(im.size)
