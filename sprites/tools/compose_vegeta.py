@@ -4,10 +4,10 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from PIL import Image
 from grid import load
 R = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
-head = load(f'{R}/chars/vegeta_head.txt'); body = load(f'{R}/chars/vegeta_body.txt')
-out = Image.new('RGBA', (28, 56), (0, 0, 0, 0))
-out.alpha_composite(head, (3, 1))     # head 1 px lower = shorter neck
-out.alpha_composite(body, (4, 30))   # body drawn over the neck stub
+head = Image.open(f'{R}/chars/vegeta_head.png'); body = load(f'{R}/chars/vegeta_body.txt')
+out = Image.new('RGBA', (31, 54), (0, 0, 0, 0))
+out.alpha_composite(head, (0, 0))
+out.alpha_composite(body, (10, 28))  # body neck lines up under the head's neck; drawn over the neck stub
 out.save(f'{R}/out/vegeta.png')
 bg = (213, 225, 237)
 tiles = [Image.open(f'{R}/refs/game/{n}_native.png') for n in ('tanjiro', 'robin', 'luffy')] + [out, Image.open(f'{R}/refs/game/zoro_native.png')]
