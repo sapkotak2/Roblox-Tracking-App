@@ -18,8 +18,19 @@ def cut(im, tol=24):
     return im.crop(im.getbbox())
 a17 = Image.open(f'{R}/refs/candidates/android17_opt3.png').convert('RGBA')          # already cut from the original
 hit = cut(Image.open(f'{R}/refs/candidates/hit_1_orig'))
+_p = hit.load()
+for _y in range(hit.height):            # enclosed background (gap between arm and body) -> transparent
+    for _x in range(hit.width):
+        if _p[_x, _y][3] and min(_p[_x, _y][:3]) > 235: _p[_x, _y] = (0, 0, 0, 0)
 a17.save(f'{R}/refs/android17_native.png'); hit.save(f'{R}/refs/hit_native.png')
 print('native', a17.size, hit.size)
 grow(a17, 51, round(a17.width * 51 / a17.height), protect_rows=((0, 15),)).save(f'{R}/out/android17.png')
-grow(hit, 54, round(hit.width * 54 / hit.height), protect_rows=((0, 12),)).save(f'{R}/out/hit.png')
+# Hit: thicken the body only (rows 13+ get +6 plain columns), head (rows 0-12) kept as drawn, centred over the body
+HEAD = 13; EXTRA = 6
+body = hit.crop((0, HEAD, hit.width, hit.height))
+body_w = grow(body.transpose(Image.TRANSPOSE), body.width + EXTRA).transpose(Image.TRANSPOSE)
+thick = Image.new('RGBA', (hit.width + EXTRA, hit.height), (0, 0, 0, 0))
+thick.alpha_composite(body_w, (0, HEAD))
+thick.alpha_composite(hit.crop((0, 0, hit.width, HEAD)), (EXTRA // 2, 0))
+grow(thick, 54, protect_rows=((0, 12),)).save(f'{R}/out/hit.png')
 for n in ('android17', 'hit'): print(n, Image.open(f'{R}/out/{n}.png').size)
