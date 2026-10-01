@@ -60,5 +60,7 @@ for y, spans in ROWS.items():
     for c, a, b in spans:
         for x in range(a, b + 1): p[x, y] = C[c] + (255,)
 im.save(f'{R}/chars/vegeta_ref_transcribed.png')                 # as in the reference (facing left)
-im.transpose(Image.FLIP_LEFT_RIGHT).save(f'{R}/out/vegeta.png')  # facing right for the game
+import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from seamscale import grow
+grow(im.transpose(Image.FLIP_LEFT_RIGHT), 51, 23, protect_rows=((9,21),), protect_cols=((5,16),)).save(f'{R}/out/vegeta.png')  # facing right, roster height
 print(im.size)
