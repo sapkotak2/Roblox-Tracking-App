@@ -75,7 +75,7 @@ p[19, 13] = C['b'] + (255,); p[20, 13] = C['b'] + (255,); p[21, 13] = C['o'] + (
 im.save(f'{R}/chars/krillin_ref_transcribed.png')
 import sys; sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from seamscale import grow
-grow(im, 46, 33, protect_rows=((8,13),), protect_cols=((13,19),)).save(f'{R}/out/krillin.png')  # Krillin stays the shortest
+grow(im, 46, 33, protect_rows=((0,14),), protect_cols=((7,20),)).save(f'{R}/out/krillin.png')  # Krillin stays the shortest
 b = Image.new('RGBA', im.size, (255,255,255,255)); b.alpha_composite(im)
 b.resize((W*20, H*20), Image.NEAREST).save(f'{R}/out/krillin_transcribed_20x.png')
 print(im.size)
