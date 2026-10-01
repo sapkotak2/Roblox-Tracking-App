@@ -1,7 +1,7 @@
 """Tiny pixel-art toolkit: canvas, shapes, auto-outline, auto-shade, sheet renderer."""
 from PIL import Image, ImageDraw
-W, H = 48, 72
-OY = 4  # logical y=0 is head top; spikes may go to y=-4
+W, H = 48, 78
+OY = 10  # logical y=0 is head top; spikes may go to y=-4
 OUT = (22, 16, 34)
 
 def hx(s):

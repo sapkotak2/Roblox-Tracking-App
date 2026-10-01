@@ -126,21 +126,36 @@ def gohan():
     return c.finish()
 
 # ---------------------------------------------------------------- VEGETA
+# refs: Broly-movie design - dark teal-navy suit, grey chest armour, gold straps, white gloves/boots w/ gold toes
 def vegeta():
-    c = Canvas(); skin = hx('f0c09a'); hair = hx('1a1626'); blue = hx('2a4fc0'); gold = hx('f0c830'); armor = hx('eae8f0')
-    arm_back(c, blue, skin, y1=33); c.rect(14, 34, 17, 38, WHITE)
-    legs(c, blue, WHITE, y1=57, boot_h=5); c.rect(18, 59, 24, 60, gold); c.rect(25, 59, 32, 60, gold)
-    torso(c, blue)
-    c.rect(18, 25, 30, 36, armor); c.rect(18, 37, 30, 40, blue)
-    c.rect(18, 33, 30, 34, shade(armor, .85))
-    c.rect(19, 41, 24, 44, armor); c.rect(26, 41, 31, 44, armor)    # armor skirt
+    c = Canvas(); skin = hx('f2c49a'); hair = hx('16121e'); hl = hx('3a3450')
+    suit = hx('1f4468'); armor = hx('c9ced8'); gold = hx('e0b848'); glove = hx('f2f2f6')
+    # swept-back flame hair (back layer)
+    c.poly([(10,12),(8,5),(4,-1),(11,0),(11,-6),(16,-1),(18,-9),(22,-2),(26,-11),(29,-2),(34,-8),(34,0),(39,-1),(36,5),(37,10),(30,12),(18,13)], hair)
+    arm_back(c, suit, glove, y1=33)
+    c.rect(19, 41, 23, 57, suit); c.rect(26, 41, 30, 57, suit)
+    c.rect(18, 50, 24, 62, glove); c.rect(25, 50, 31, 62, glove)         # tall white boots
+    c.rect(25, 60, 34, 63, glove); c.rect(32, 60, 34, 63, gold)          # gold toe cap
+    c.rect(18, 59, 24, 60, shade(glove, .85)); c.rect(25, 59, 31, 60, shade(glove, .85))
+    torso(c, suit)
+    c.rect(19, 26, 29, 38, armor); c.line(24, 26, 24, 38, shade(armor, .8))   # chest plate + centre seam
+    c.rect(19, 39, 29, 40, gold)                                          # gold armour hem
     head(c, skin)
-    c.rect(13, 24, 20, 28, gold); c.rect(28, 24, 35, 28, gold)      # shoulder guards
-    c.poly([(10,13),(9,6),(12,1),(15,-4),(18,0),(21,-5),(24,0),(28,-4),(31,1),(35,-1),(36,5),(37,10),(36,12),(32,8),(28,6),(22,8),(17,12),(14,16)], hair)
-    c.poly([(25,8),(29,8),(27,12)], hair)                            # widow's peak
-    face(c, eye=hx('2a2a40'), brow=hair)
-    c.line(29, 10, 35, 12, hair, 1)                                  # angry brow
-    c.rect(31, 27, 35, 33, blue); c.rect(31, 34, 36, 38, WHITE)
+    c.rect(19, 23, 23, 28, gold); c.rect(26, 23, 30, 28, gold)           # gold shoulder straps
+    c.line(19, 25, 23, 25, shade(gold, .8)); c.line(26, 25, 30, 25, shade(gold, .8))
+    # front hairline with widow's peak, over the head
+    c.poly([(10,12),(9,5),(13,0),(20,-3),(28,-3),(35,0),(37,6),(35,11),(33,10),(32,6),(28,4),(24,6),(20,9),(16,13),(13,16)], hair)
+    c.poly([(31,5),(36,6),(34,11),(32,9)], hair)                          # widow's peak
+    c.line(14, -3, 17, -6, hl); c.line(24, -4, 26, -8, hl); c.line(31, -3, 33, -6, hl); c.line(18, 1, 23, 0, hl)
+    # big sharp eye + heavy angry brow
+    c.rect(30, 12, 34, 14, WHITE); c.rect(32, 12, 34, 14, hx('2a2234')); c.px(34, 12, WHITE, False)
+    c.line(28, 9, 35, 12, hair, 2); c.px(29, 13, shade(skin, .7), False)
+    c.line(29, 15, 33, 15, shade(skin, .75))                              # cheek line
+    c.rect(32, 20, 35, 20, hx('6a3a3a'))
+    # crossed arms across the chest, white gloves
+    c.rect(18, 36, 31, 38, suit); c.rect(14, 36, 18, 40, glove)
+    c.rect(20, 32, 33, 34, suit); c.rect(30, 31, 35, 35, glove)
+    c.line(30, 36, 33, 37, shade(suit, .7))
     return c.finish()
 
 # ---------------------------------------------------------------- KRILLIN
