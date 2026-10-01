@@ -5,9 +5,9 @@ from PIL import Image
 from grid import load
 R = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 head = Image.open(f'{R}/chars/vegeta_head.png'); body = load(f'{R}/chars/vegeta_body.txt')
-out = Image.new('RGBA', (31, 55), (0, 0, 0, 0))
+out = Image.new('RGBA', (27, 52), (0, 0, 0, 0))
 out.alpha_composite(head, (0, 0))
-out.alpha_composite(body, (9, 29))  # body neck lines up under the head's neck; drawn over the neck stub
+out.alpha_composite(body, (5, 26))  # body neck lines up under the head's neck; drawn over the neck stub
 out.save(f'{R}/out/vegeta.png')
 bg = (213, 225, 237)
 tiles = [Image.open(f'{R}/refs/game/{n}_native.png') for n in ('tanjiro', 'robin', 'luffy')] + [out, Image.open(f'{R}/refs/game/zoro_native.png')]
