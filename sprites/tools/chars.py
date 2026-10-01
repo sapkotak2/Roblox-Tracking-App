@@ -212,3 +212,33 @@ def whis():
 
 ALL = [('Sasuke', sasuke), ('Itachi', itachi), ('Piccolo', piccolo), ('Gohan', gohan),
        ('Vegeta', vegeta), ('Krillin', krillin), ('Beerus', beerus), ('Whis', whis)]
+
+
+# ------------------------------------------------ VEGETA (classic saga, head converted from reference art)
+def vegeta_ref():
+    from PIL import Image
+    import os
+    c = Canvas(); skin = hx('f2c49a'); suit = hx('2a44b4'); armor = hx('ececf2'); gold = hx('dcb040'); glove = hx('f6f6fa')
+    arm_back(c, suit, glove, y1=33)
+    c.rect(19, 41, 23, 56, suit); c.rect(26, 41, 30, 56, suit)
+    c.rect(18, 49, 24, 61, glove); c.rect(25, 49, 31, 61, glove)         # tall white boots
+    c.rect(25, 59, 34, 62, glove); c.rect(32, 59, 34, 62, gold)          # gold toe cap
+    c.rect(18, 58, 24, 59, shade(glove, .85)); c.rect(25, 58, 31, 59, shade(glove, .85))
+    torso(c, suit)
+    c.rect(18, 26, 30, 36, armor); c.rect(18, 37, 30, 40, suit)          # white chest armour
+    c.rect(18, 34, 30, 36, shade(armor, .85))
+    c.rect(19, 41, 24, 44, armor); c.rect(26, 41, 31, 44, armor)         # armour skirt flaps
+    c.rect(22, 23, 27, 26, skin)                                         # neck
+    head = Image.open(os.path.join(os.path.dirname(__file__), '..', 'refs', 'vegeta', 'head_profile_px.png'))
+    c.paste(head, 6, -5)
+    c.ellipse(13, 22, 21, 29, gold); c.ellipse(28, 22, 36, 29, gold)     # big round gold shoulder pads
+    c.line(14, 23, 14, 28, armor); c.line(35, 23, 35, 28, armor)
+    # hand-drawn face detail over the converted head
+    c.rect(29, 15, 33, 17, WHITE); c.rect(31, 15, 33, 17, hx('2a2234')); c.px(33, 15, WHITE, False)
+    c.line(27, 12, 34, 15, hx('16121e'), 2)                              # angry brow
+    c.rect(31, 21, 34, 21, hx('7a3a3a'))                                 # scowl
+    # crossed arms, white gloves
+    c.rect(18, 36, 31, 38, suit); c.rect(14, 36, 18, 40, glove)
+    c.rect(20, 32, 33, 34, suit); c.rect(30, 31, 35, 35, glove)
+    c.line(30, 36, 33, 37, shade(suit, .7))
+    return c.finish()

@@ -51,6 +51,13 @@ class Canvas:
             for x in range(W):
                 if im.getpixel((x, y)): self.px(x, y - OY, c)
 
+    def paste(self, im, x0, y0, sh=False):
+        """paste an RGBA image; (x0,y0) are logical coords of its top-left."""
+        for y in range(im.height):
+            for x in range(im.width):
+                r, g, b, a = im.getpixel((x, y))
+                if a: self.px(x0 + x, y0 + y, (r, g, b), sh)
+
     def clear(self, x, y):
         self.g.pop((x, y + OY), None)
 
