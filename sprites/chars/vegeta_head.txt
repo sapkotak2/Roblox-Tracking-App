@@ -1,0 +1,40 @@
+# palette
+o 1d1c21
+h 2c2a36
+H 4a4860
+s f2c6a5
+S d79f7b
+t ae7862
+w f9f5ec
+m 8a4040
+# grid
+..........o............
+.........oh.......o....
+...o.....ohh.....oh....
+...oo...ohhh....ohh....
+....oh..ohhHo..ohhh..o.
+....ohh.ohhHh.ohhHh.oh.
+.o..ohhhohhHhoohhHhohh.
+.oo.ohhHhhhHhhhhhHhhho.
+..oohhhHhhhhHhhhhHhhho.
+...ohhhhHhhhHhhhhhhho..
+oo.ohhhhHhhhhhhhhhhho..
+.oohhhhhhhhhhhhhhhhho..
+..ohhhhhhhhhhhhhhhhho..
+.ohhhhhhhhhhhhhhhhhso..
+ohhhhhhhhhhhhhhhhhsso..
+.ohhhhhhhhhhhhhhhhssso.
+.ohhhhhhhhhhhhhhhsssso.
+oohhhhhhHhhhhhhhssssso.
+.ohhhhhhhhhhhhhsssssso.
+..ohhhhhhhhhhhssssssso.
+...ohhhhhhhhhhsooossso.
+....ohhoSsohossowoooso.
+....ohoSStshossSwoSssso
+....ohoSttsoosssSsssso.
+.....ooSSssosssssssso..
+......osssssssssssmmo..
+.......osssssssssSSo...
+........oSSSSSSSSSo....
+..........oSSooooo.....
+..........oSSo.........
