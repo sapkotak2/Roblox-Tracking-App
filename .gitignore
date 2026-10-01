@@ -1,1 +1,3 @@
 __pycache__/
+sprites/refs/candidates/*/
+!sprites/refs/candidates/*.json
