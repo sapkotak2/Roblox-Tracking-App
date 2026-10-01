@@ -1,0 +1,16 @@
+{
+ "hitsugaya": [["hitsugaya","00.img"],["hitsugaya","08.img"],["hitsugaya","10.img"]],
+ "kenpachi":  [["kenpachi","07.img"],["kenpachi","06.img"],["kenpachi","04.img"]],
+ "urahara":   [["urahara","03.img"],["urahara","06.img"],["urahara","13.img"]],
+ "grimmjow":  [["grimmjow","00.img"],["grimmjow","10.img"],["grimmjow","05.img"]],
+ "ulquiorra": [["ulquiorra","13.img"],["ulquiorra","11.img"],["ulquiorra","03.img"]],
+ "itadori":   [["itadori","10.img"],["itadori","04.img"],["itadori","13.img"]],
+ "sukuna":    [["sukuna","13.img"],["sukuna","00.img"],["sukuna","04.img"]],
+ "toji":      [["toji","04.img"],["toji","11.img"],["toji","03.img"]],
+ "megumi":    [["megumi","04.img"],["megumi","08.img"],["megumi","07.img"]],
+ "mahito":    [["mahito","04.img"],["mahito","05.img"],["mahito","02.img"]],
+ "geto":      [["geto","04.img"],["geto","00.img"],["geto","03.img"]],
+ "okkotsu":   [["okkotsu","04.img"],["okkotsu","03.img"],["okkotsu","06.img"]],
+ "asta":      [["asta","01.img"],["asta","03.img"],["asta","07.img"]],
+ "yuno":      [["yuno","00.img"]]
+}
