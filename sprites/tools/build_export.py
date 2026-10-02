@@ -4,11 +4,11 @@ from PIL import Image
 R = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 KEYS = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#$%&*+-=?@!^~<>:;_|/[](){}'
 DBZ = ['vegeta', 'piccolo', 'krillin', 'beerus', 'whis', 'trunks', 'jiren', 'android17', 'hit']
-JUS = sorted(f[:-4] for f in os.listdir(f'{R}/out/jus') if f.endswith('.png'))
+JUS = sorted(f[:-4] for f in os.listdir(f'{R}/out/fit') if f.endswith('.png'))
 src = open(f'{R}/export/dbz_sprites.js').read()
 head_end, tail_start = src.index('const SPRITES = {'), src.index('function crc32')
 parts, sizes = [], []
-for n, path in [(n, f'{R}/out/{n}.png') for n in DBZ] + [(n, f'{R}/out/jus/{n}.png') for n in JUS]:
+for n, path in [(n, f'{R}/out/{n}.png') for n in DBZ] + [(n, f'{R}/out/fit/{n}.png') for n in JUS]:
     im = Image.open(path).convert('RGBA'); w, h = im.size; px = im.load(); pal = {}; rows = []
     for y in range(h):
         r = ''

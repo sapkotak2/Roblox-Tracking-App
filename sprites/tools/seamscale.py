@@ -11,7 +11,9 @@ def grow_rows(im, n, protect=()):
             if any(a <= y <= b for a, b in protect) or y in used or y - 1 in used or y + 1 in used: continue
             d = _diff(rows[y], rows[y - 1])
             if best is None or d < best[0]: best = (d, y)
-        if best is None: break
+        if best is None:
+            if not used: break
+            used = set(); continue          # every line used once this pass -> start another pass
         y = best[1]; rows.insert(y, list(rows[y]))
         used = {u + 1 if u >= y else u for u in used} | {y, y + 1}
         protect = tuple((a + 1 if a >= y else a, b + 1 if b >= y else b) for a, b in protect)
