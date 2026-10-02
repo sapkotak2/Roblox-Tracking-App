@@ -46,7 +46,7 @@ def fit(im, T=LUFFY, head_w=None, neck=None, max_w=None, head_s=None):
     s = head_s or max(.85, min(1.6, T['head_h'] / head.height))
     hh = round(head.height * s)
     hw = head_w or round(head.width * s)
-    hw = max(round(T['head_w'] * .8), min(round(T['head_w'] * 1.2), hw))
+    if not head_w: hw = max(round(T['head_w'] * .8), min(round(T['head_w'] * 1.2), hw))
     nh = resize(head, hw, hh)
     # body: Luffy's body height, and scaled so the core (torso/legs) width equals Luffy's
     sx = T['core'] / core_width(body)
