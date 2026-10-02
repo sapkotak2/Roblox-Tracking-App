@@ -32,5 +32,13 @@ for name, path in PICKS.items():
     if len(out.getcolors(1 << 20)) > 70: out = clean(f'{R}/out/fit/{name}.png', f'{R}/out/fit/{name}.png', 22)
     sizes[name] = out.size
 # Ishida: keep the exact earlier version the user preferred over later attempts
-Image.open(f'{R}/refs/jus_picks/ishida_final.png').save(f'{R}/out/fit/ishida.png')
+_ish = Image.open(f'{R}/refs/jus_picks/ishida_final.png').convert('RGBA')
+from seamscale import grow
+def _thicken(im, neck=19, split=12, extra=6):     # widen only the robe (right of the bow arm); head untouched
+    head = im.crop((0, 0, im.width, neck)); left = im.crop((0, neck, split, im.height)); right = im.crop((split, neck, im.width, im.height))
+    nr = grow(right.transpose(Image.TRANSPOSE), right.width + extra).transpose(Image.TRANSPOSE)
+    out = Image.new('RGBA', (im.width + extra, im.height), (0, 0, 0, 0))
+    out.alpha_composite(left, (0, neck)); out.alpha_composite(nr, (split, neck)); out.alpha_composite(head, (extra // 2, 0))
+    return out.crop(out.getbbox())
+_thicken(_ish).save(f'{R}/out/fit/ishida.png')
 print(json.dumps(sizes))
