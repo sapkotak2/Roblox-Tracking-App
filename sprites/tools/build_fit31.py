@@ -31,4 +31,6 @@ for name, path in PICKS.items():
     out.save(f'{R}/out/fit/{name}.png')
     if len(out.getcolors(1 << 20)) > 70: out = clean(f'{R}/out/fit/{name}.png', f'{R}/out/fit/{name}.png', 22)
     sizes[name] = out.size
+# Ishida: keep the exact earlier version the user preferred over later attempts
+Image.open(f'{R}/refs/jus_picks/ishida_final.png').save(f'{R}/out/fit/ishida.png')
 print(json.dumps(sizes))
