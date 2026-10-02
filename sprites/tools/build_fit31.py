@@ -41,8 +41,4 @@ def _thicken(im, neck=19, split=12, extra=6):     # widen only the robe (right o
     out.alpha_composite(left, (0, neck)); out.alpha_composite(nr, (split, neck)); out.alpha_composite(head, (extra // 2, 0))
     return out.crop(out.getbbox())
 _thicken(_ish).save(f'{R}/out/fit/ishida.png')
-# face readability pass (see tools/face_redraw.py)
-from face_redraw import SPECS, redraw
-for _n, _spec in SPECS.items():
-    redraw(Image.open(f'{R}/out/fit/{_n}.png'), _spec).save(f'{R}/out/fit/{_n}.png')
 print(json.dumps(sizes))

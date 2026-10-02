@@ -25,3 +25,14 @@ def clarify(im, head_rows, keep=()):
             c = p[x, y]
             if c[3] and c[:3] in mapping: p[x, y] = mapping[c[:3]] + (255,)
     return im
+
+def sharpen_eyes(im, rect):
+    """inside the face rect, push near-black/dark non-skin pixels (eyes, brows) to crisp black so they pop on light skin"""
+    im = im.convert('RGBA'); p = im.load(); x0, y0, x1, y1 = rect
+    for y in range(y0, y1 + 1):
+        for x in range(x0, x1 + 1):
+            if 0 <= x < im.width and 0 <= y < im.height:
+                r, g, b, a = p[x, y]
+                if a and not is_skin((r, g, b)) and (r + g + b) < 300 and max(r, g, b) - min(r, g, b) < 90:
+                    p[x, y] = (max(0, r - 60), max(0, g - 60), max(0, b - 60), 255)
+    return im
