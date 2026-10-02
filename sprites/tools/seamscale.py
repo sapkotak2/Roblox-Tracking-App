@@ -24,3 +24,20 @@ def grow(im, target_h, target_w=None, protect_rows=(), protect_cols=()):
     if target_w:
         im = grow_rows(im.transpose(Image.TRANSPOSE), target_w - im.width, protect_cols).transpose(Image.TRANSPOSE)
     return im
+
+def shrink_rows(im, n, protect=()):
+    """Remove the n rows most similar to the row above them (flat stretches), never two adjacent in one pass."""
+    rows = _rows(im)
+    for _ in range(n):
+        best = None
+        for y in range(1, len(rows)):
+            if any(a <= y <= b for a, b in protect): continue
+            d = _diff(rows[y], rows[y - 1])
+            if best is None or d < best[0]: best = (d, y)
+        if best is None: break
+        rows.pop(best[1])
+        protect = tuple((a - 1 if a > best[1] else a, b - 1 if b >= best[1] else b) for a, b in protect)
+    out = Image.new('RGBA', (im.width, len(rows)))
+    for y, r in enumerate(rows):
+        for x, c in enumerate(r): out.putpixel((x, y), c)
+    return out
