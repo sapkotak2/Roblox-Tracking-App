@@ -15,7 +15,7 @@ PICKS = {
  # fan JUS-style
  'hinata': f'{F}/hinata/idle_00.png', 'boruto': f'{F}/boruto/idle_00.png', 'itachi': f'{F}/itachi/idle_00.png',
  'obito': f'{F}/obito/idle_04.png', 'madara': f'{F}/madara/idle_13.png', 'jiraiya': f'{F}/jiraiya/idle_02.png',
- 'neji': f'{F}/neji/idle_00.png', 'gaara': f'{F}/gaara/frame_07_0.png', 'ishida': f'{J}/ishida_bds_51.png',
+ 'neji': f'{F}/neji/idle_00.png', 'gaara': f'{F}/gaara/frame_07_0.png', 'ishida': f'{C}/ishida/idle_04.png',
  'aizen': f'{F}/aizen/idle_11.png', 'yhwach': f'{C}/yhwach/idle_00.png', 'orihime': f'{F}/orihime/idle_01.png',
  'byakuya': f'{F}/byakuya/idle_04.png', 'kenpachi': f'{F}/kenpachi/idle_08.png', 'urahara': f'{F}/urahara/idle_03.png',
  'grimmjow': f'{F}/grimmjow/idle_01.png', 'ulquiorra': f'{F}/ulquiorra/idle_06.png', 'itadori': f'{F}/sukuna/idle_03.png',
