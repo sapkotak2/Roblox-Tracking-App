@@ -13,8 +13,8 @@ PICK = dict(aizawa=3, akaza=1, allmight=0, armin=0, asuna=6, baki=5, bakugo=3, c
             nezuko=3, okarun=0, overhaul=0, rengoku=0, senku=1, shinichi=0, shinra=0, subaru=0, thorfinn=2,
             todoroki=3, tomura=4, zenitsu=0)
 SRC = {k: f'{B}/{k}/cand_{v}.png' for k, v in PICK.items()}
-SRC.update(rengoku=f'{R}/refs/b3_extra/rengoku.png', senku=f'{R}/refs/b3_extra/senku.png', gon=f'{R}/refs/jus/gon_stand0.png', jotaro=f'{R}/refs/jus/jotaro_stand0.png')
-OVR = {'armin': dict(head_s=0.85, head_w=20), 'escanor': dict(max_w=32)}
+SRC.update(armin=f'{R}/refs/b3_extra/armin.png', mob=f'{R}/refs/b3_extra/mob.png', chrollo=f'{R}/refs/b3_extra/chrollo.png', rengoku=f'{R}/refs/b3_extra/rengoku.png', senku=f'{R}/refs/b3_extra/senku.png', gon=f'{R}/refs/jus/gon_stand0.png', jotaro=f'{R}/refs/jus/jotaro_stand0.png')
+OVR = {'escanor': dict(max_w=32)}
 os.makedirs(f'{R}/out/b3', exist_ok=True); os.makedirs(f'{R}/refs/b3_picks', exist_ok=True)
 sizes = {}
 for n, p in sorted(SRC.items()):
