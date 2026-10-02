@@ -11,7 +11,7 @@ F, C, J = f'{R}/refs/jus_fan', f'{R}/refs/candidates', f'{R}/refs/jus'
 PICKS = {
  # official Jump Ultimate Stars
  'sasuke': f'{J}/sasuke_idle.png', 'frieza': f'{J}/frieza_idle.png', 'kakashi': f'{J}/kakashi_stand4.png',
- 'hitsugaya': f'{J}/hitsugaya_standA.png', 'renji': f'{J}/renji_standA.png',
+ 'hitsugaya': f'{J}/hitsugaya_standB.png', 'renji': f'{J}/renji_standA.png',
  # fan JUS-style
  'hinata': f'{F}/hinata/idle_00.png', 'boruto': f'{F}/boruto/idle_00.png', 'itachi': f'{F}/itachi/idle_00.png',
  'obito': f'{F}/obito/idle_04.png', 'madara': f'{F}/madara/idle_13.png', 'jiraiya': f'{F}/jiraiya/idle_02.png',
