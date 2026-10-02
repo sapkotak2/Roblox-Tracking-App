@@ -6,9 +6,10 @@ def get(url, binary=False):
     r = subprocess.run(['curl', '-sL', '-m', '25', '-A', UA, url], capture_output=True)
     return r.stdout if binary else r.stdout.decode('utf8', 'ignore')
 key, name, tokens = sys.argv[1], sys.argv[2], sys.argv[3].lower().split(',')
-out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'refs', 'candidates', key); os.makedirs(out, exist_ok=True)
+out = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'refs', os.environ.get('SUBDIR', 'candidates'), key); os.makedirs(out, exist_ok=True)
 links = []
-for q in (f'{name} pixel art', f'{name} sprite', f'{name} chibi pixel', f'{name} 8 bit'):
+QUERIES = os.environ.get('QUERIES', '{n} pixel art|{n} sprite|{n} chibi pixel|{n} 8 bit').split('|')
+for q in [t.format(n=name) for t in QUERIES]:
     page = get('https://www.deviantart.com/search?q=' + q.replace(' ', '+'))
     for u in re.findall(r'https://www\.deviantart\.com/[a-z0-9_-]+/art/[A-Za-z0-9-]+-\d{6,}', page):
         slug = u.split('/art/')[1].lower()

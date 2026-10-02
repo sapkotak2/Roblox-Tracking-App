@@ -1,3 +1,4 @@
 __pycache__/
 sprites/refs/candidates/*/
 !sprites/refs/candidates/*.json
+sprites/refs/jus_fan/*/
