@@ -9,7 +9,8 @@ R = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 src = open(f'{R}/tools/build_roster31.py').read()
 base = {'F': f'{R}/refs/jus_fan', 'C': f'{R}/refs/candidates', 'J': f'{R}/refs/jus'}
 PICKS = {n: f'{base[k]}/{p}' for n, k, p in re.findall(r"'(\w+)': f'\{(\w)\}/([^']+)'", src)}
-OVR = {'toji': dict(head_s=1.0)}          # per-character fit overrides, e.g. {'asta': dict(max_w=40)}
+NECK = {'aizen': 14, 'byakuya': 14, 'gaara': 14, 'geto': 16, 'grimmjow': 14, 'hinata': 13, 'itachi': 14, 'kakashi': 13, 'madara': 15, 'megumi': 14, 'neji': 15, 'obito': 16, 'renji': 21, 'toji': 18, 'urahara': 17, 'yhwach': 18}   # chin line read from the ruler sheets (auto-detection cut faces)
+OVR = {n: dict(neck=v) for n, v in NECK.items()}          # per-character fit overrides, e.g. {'asta': dict(max_w=40)}
 os.makedirs(f'{R}/out/fit', exist_ok=True); os.makedirs(f'{R}/refs/jus_picks', exist_ok=True)
 sizes = {}
 for name, path in PICKS.items():
