@@ -1,0 +1,3 @@
+00_Kyojuro_anime_right_face.png
+10_face_crop_from_01.png
+03_Kyojuro_Tsuba.png

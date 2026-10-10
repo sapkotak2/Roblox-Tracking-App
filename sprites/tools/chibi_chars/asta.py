@@ -1,88 +1,101 @@
-"""Asta (Black Clover) - chibi redraw (see tools/chibi.py for the style guide)."""
+"""Asta (Black Clover) - chibi redraw (see tools/chibi.py for the style guide).
+Matched to refs/redraw/asta (01 anime profile, face crop, Demon-Slayer sword), checklist in refs/redraw/asta/NOTES.md."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from chibi import Sprite
 
 PAL = dict(
-    o=(22, 18, 22),                                   # outline
-    a=(232, 232, 224), A=(164, 166, 168),             # ash-white hair
+    o=(24, 20, 26),                                   # outline (also brows, pupils)
+    a=(218, 218, 210), A=(146, 148, 148),             # ash-silver hair / grey shade (A also = sword edge, shirt shade)
     s=(248, 206, 166), S=(214, 150, 112),             # skin
-    e=(255, 255, 250), g=(40, 168, 76), k=(30, 26, 32), m=(130, 44, 40),   # eye white, green iris, dark, mouth
-    b=(52, 50, 62), B=(32, 30, 40),                   # black cape
-    d=(112, 114, 128), D=(80, 82, 96),                # dark grey outfit (d also = sword edge)
-    r=(170, 72, 44), R=(112, 44, 30),                 # red-brown boots / belt
-    y=(236, 190, 60),                                 # gold Black Bulls emblem
+    e=(255, 255, 250), g=(120, 156, 70), m=(132, 50, 44),   # eye white, olive-green iris, mouth
+    b=(48, 46, 56), B=(28, 26, 34),                   # black robe / headband / boots / sword
+    n=(54, 76, 126), N=(34, 50, 88),                  # navy jacket sleeves + cropped trousers
+    w=(242, 240, 232),                                # white shirt, boot toe caps
+    r=(156, 100, 54), R=(106, 66, 34),                # brown belt + pouch
+    y=(238, 192, 62),                                 # gold Black Bulls emblem / buckle
 )
 sp = Sprite('asta', W=48, H=52, palette=PAL)
 
+# ---------------- back arm: navy sleeve + fist, below the cape on the far side ----------------
+arm_b = sp.layer()
+arm_b.poly('n', [(11, 24), (15, 24), (14, 31), (10, 31)]).v('N', 11, 25, 30)
+arm_b.ell('s', 8, 29, 13, 34).px('S', (9, 33), (10, 33), (8, 31))
 
-# ---------------- cape, back part (hangs behind, to the left) ----------------
-cape_b = sp.layer()
-cape_b.poly('b', [(10, 19), (19, 19), (17, 34), (5, 35), (6, 26)])
-cape_b.poly('B', [(9, 21), (11, 21), (8, 35), (5, 35), (6, 27)])
-cape_b.poly('B', [(5, 35), (8, 32), (10, 35), (12, 32), (14, 35)])            # ragged hem as two clean notches
-cape_b.rect('y', 9, 26, 10, 27)                                                # gold emblem
-
-# ---------------- legs ----------------
+# ---------------- legs: navy cropped trousers, black boots with white toe caps ----------------
 leg_b = sp.layer()   # back leg angled back
-leg_b.poly('d', [(12, 33), (19, 33), (16, 39), (13, 44), (7, 44), (10, 38)])
-leg_b.poly('D', [(8, 43), (11, 37), (13, 35), (13, 37), (11, 43)])
-leg_b.poly('r', [(7, 42), (13, 42), (13, 47), (15, 50), (4, 50), (6, 47)]).v('R', 8, 43, 48).h('R', 4, 15, 50)
+leg_b.poly('n', [(13, 32), (20, 32), (17, 39), (14, 44), (8, 44), (11, 38)])
+leg_b.poly('N', [(9, 43), (12, 37), (14, 34), (14, 37), (12, 43)])
+leg_b.px('s', (9, 44), (10, 44), (11, 44), (12, 44)).put('s', (13, 44))           # bit of calf under the slit hem
+leg_b.poly('b', [(8, 44), (13, 44), (13, 47), (15, 50), (4, 50), (6, 47)]).v('B', 9, 45, 48)
+leg_b.poly('w', [(4, 48), (7, 48), (7, 50), (4, 50)])
 leg_f = sp.layer()   # front leg bent forward
-leg_f.poly('d', [(21, 33), (27, 33), (31, 38), (31, 44), (25, 44), (24, 39)]).v('D', 25, 39, 43).v('D', 26, 41, 43)
-leg_f.poly('r', [(25, 42), (31, 42), (32, 47), (35, 48), (35, 50), (25, 50)]).v('R', 26, 43, 48).h('R', 25, 35, 50)
+leg_f.poly('n', [(21, 32), (27, 32), (31, 37), (31, 44), (25, 44), (24, 38)]).v('N', 25, 38, 43).v('N', 26, 40, 43)
+leg_f.poly('b', [(25, 44), (31, 44), (32, 47), (35, 48), (35, 50), (25, 50)]).v('B', 26, 45, 48)
+leg_f.poly('w', [(32, 47), (35, 48), (35, 50), (32, 50)])
 
-# ---------------- torso: dark grey top, belt ----------------
+# ---------------- torso: white shirt at the belly, brown belt + pouch ----------------
 torso = sp.layer()
-torso.poly('d', [(13, 21), (26, 21), (27, 25), (25, 33), (14, 33), (12, 25)])
-torso.poly('D', [(13, 22), (16, 22), (16, 33), (14, 33), (13, 26)])
-torso.h('R', 13, 26, 30).h('r', 13, 26, 31).rect('y', 20, 30, 21, 31)           # belt + buckle
-torso.rect('s', 17, 18, 21, 22).h('S', 17, 21, 19).v('S', 17, 18, 22)             # neck
-torso.v('D', 22, 24, 30)                                                          # fold line
+torso.poly('w', [(13, 22), (27, 22), (27, 26), (25, 33), (15, 33), (13, 26)])     # white tunic
+torso.poly('A', [(13, 24), (16, 24), (17, 33), (15, 33), (13, 27)])               # back side in shade
+torso.h('R', 14, 26, 30).h('r', 14, 26, 31).rect('y', 20, 30, 21, 31)            # belt + gold buckle
+torso.rect('r', 23, 31, 26, 35).h('R', 23, 26, 35).px('y', (24, 32))              # pouch on the hip
+torso.rect('s', 17, 17, 21, 21).h('S', 17, 21, 18).v('S', 17, 17, 21)             # neck
 
-# ---------------- hood bunched around the neck ----------------
-hood = sp.layer()
-hood.poly('b', [(10, 19), (16, 19), (18, 22), (25, 22), (27, 21), (26, 24), (17, 25), (11, 23)])
-hood.h('B', 12, 24, 24).px('B', (11, 22), (12, 23))
+# ---------------- front arm: navy sleeve, fist on the hilt ----------------
+arm_f = sp.layer()
+arm_f.poly('n', [(26, 24), (30, 24), (33, 28), (30, 31), (27, 28)]).v('N', 27, 25, 27).px('N', (28, 28), (29, 29))
+
+# ---------------- Black Bulls robe: short black hooded cape over both shoulders, gold bull emblem ----------------
+cape = sp.layer()
+cape.poly('b', [(12, 19), (27, 19), (31, 23), (30, 26), (24, 25), (17, 25), (9, 27), (9, 23)])
+cape.poly('B', [(10, 22), (13, 21), (14, 25), (9, 27)])                            # far side in shade
+cape.poly('b', [(10, 17), (16, 17), (16, 21), (11, 22)]).h('B', 11, 15, 21)        # hood bunched behind the neck
+cape.v('B', 21, 21, 24)                                                           # front opening
+cape.rect('y', 24, 22, 26, 24).px('b', (25, 23))                                 # gold bull emblem
+cape.rect('y', 20, 20, 21, 20)                                                    # clasp at the throat
+
+# ---------------- the ahoge: one long strand curling up out of the top of the hair ----------------
+ahoge = sp.layer()
+core = [(19, 6), (19, 5), (19, 4), (20, 3), (20, 2), (21, 1), (22, 1), (23, 1), (24, 2)]
+ahoge.put('o', *[(x + dx, y + dy) for x, y in core for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)) if (x + dx, y + dy) not in core])
+ahoge.put('a', *core)
 
 # ---------------- head ----------------
 head = sp.layer()
-head.ell('a', 9, 3, 30, 19)
-# sharp spikes up and back (blunt 2-px tips so each spike keeps its colour)
-for t1, t2, b1, b2 in (((3, 1), (5, 0), (9, 8), (15, 5)), ((11, 1), (13, 1), (13, 5), (20, 4)),
-                       ((20, 0), (22, 0), (18, 4), (26, 4)), ((29, 1), (30, 2), (24, 5), (30, 8)),
-                       ((35, 5), (35, 7), (28, 6), (30, 11)), ((1, 7), (1, 9), (11, 5), (10, 12)),
-                       ((3, 15), (4, 17), (10, 12), (12, 18))):
+head.ell('a', 9, 4, 30, 19)
+# messy spikes fanning up and out (blunt tips keep their colour)
+for t1, t2, b1, b2 in (((5, 3), (7, 2), (10, 9), (15, 5)), ((12, 1), (14, 1), (13, 6), (19, 5)),
+                       ((25, 1), (27, 2), (22, 5), (29, 6)), ((32, 4), (33, 5), (27, 6), (30, 10)),
+                       ((2, 9), (2, 11), (11, 7), (10, 13)), ((3, 16), (4, 18), (10, 13), (12, 18)),
+                       ((33, 10), (33, 12), (29, 9), (30, 14))):
     head.poly('a', [t1, t2, b2, b1])
 head.poly('s', [(14, 10), (29, 10), (30, 13), (29, 16), (26, 19), (17, 19), (14, 16)])   # face
-head.poly('a', [(12, 9), (15, 9), (14, 17), (12, 15)])                            # side lock
-# black headband just above the brows, knot tails fluttering behind
-head.poly('b', [(10, 8), (31, 8), (31, 9), (10, 9)])
-head.poly('b', [(11, 8), (2, 9), (3, 12), (11, 10)])
-head.v('A', 11, 4, 7).v('A', 18, 3, 6).v('A', 25, 3, 6).h('A', 6, 11, 15)
-head.v('S', 15, 10, 15)                                                           # face shade under the hair
-# eyes: determined, green
-head.h('k', 16, 18, 11).h('k', 25, 28, 11)                                       # angled brows
-head.px('k', (20, 12), (23, 12))
-head.h('o', 18, 20, 12).px('e', (18, 13), (18, 14)).rect('g', 19, 13, 20, 14).px('k', (20, 13))
-head.h('o', 24, 27, 12).px('e', (23, 13), (24, 13), (27, 13), (23, 14), (24, 14), (27, 14))
-head.rect('g', 25, 13, 26, 14).px('k', (26, 13))
+head.poly('a', [(12, 9), (15, 9), (15, 17), (12, 15)])                            # side lock
+head.poly('a', [(26, 9), (30, 9), (30, 12)])                                       # front lock over the temple
+# black headband across the forehead, gold Black Bulls emblem on the side
+head.poly('b', [(9, 8), (31, 7), (31, 9), (9, 10)]).rect('y', 12, 8, 13, 9)
+head.h('A', 11, 15, 6).h('A', 24, 28, 5).h('A', 4, 10, 11).h('A', 6, 11, 15)
+head.v('S', 15, 10, 16)                                                           # face shade under the hair
+# big olive-green eyes, thin brows angled down to the nose, confident smirk
+head.px('o', (16, 11), (17, 11), (18, 11)).px('o', (25, 11), (26, 11), (27, 11), (28, 11))
+head.h('o', 18, 20, 12).px('e', (18, 13), (18, 14)).rect('g', 19, 13, 20, 14).px('o', (20, 13))
+head.h('o', 23, 27, 12).px('e', (23, 13), (26, 13), (23, 14), (26, 14)).rect('g', 24, 13, 25, 14).px('o', (25, 13))
 head.px('S', (28, 15))                                                            # nose
-head.h('m', 23, 26, 17).px('e', (24, 17), (25, 17))                               # shouting grin
+head.h('m', 22, 24, 17)                                                           # small confident smirk
 
-# ---------------- demon-slayer greatsword: black, rough, held low and forward ----------------
+# ---------------- Demon-Slayer Sword: huge broad black blade, long crossguard, held low and forward ----------------
 sword = sp.layer()
-sword.poly('b', [(30, 32), (34, 28), (38, 32), (39, 31), (40, 34), (46, 40), (45, 44), (43, 43), (41, 46), (38, 44)])
-sword.line('A', [(35, 30), (37, 32)]).line('A', [(40, 35), (44, 39)])               # rough light edge (notched)
-sword.line('B', [(33, 33), (39, 39)])                                             # crack
-sword.poly('k', [(29, 31), (33, 27), (35, 29), (31, 33)])                         # dark guard band
+sword.poly('b', [(32, 34), (36, 30), (46, 40), (46, 43), (42, 47), (39, 46)])     # blade with a slanted tip
+sword.line('A', [(37, 31), (45, 39)])                                             # worn light edge
+sword.poly('B', [(36, 37), (38, 35), (40, 38), (38, 40)]).px('B', (42, 42), (43, 42), (41, 44))   # chipped patches
+guard = sp.layer().line('A', [(29, 37), (39, 27)], width=3)                       # long thin crossguard
+hilt = sp.layer().line('R', [(29, 28), (33, 32)], width=3)                       # handle
+fist = sp.layer().ell('s', 29, 27, 34, 32).px('S', (30, 31), (31, 32), (29, 30)).px('S', (32, 32))
 
-# ---------------- front arm: grey sleeve, bare forearm, fist on the hilt ----------------
-arm_f = sp.layer()
-arm_f.poly('d', [(23, 21), (28, 21), (31, 26), (27, 28), (24, 25)]).v('D', 24, 22, 25).px('D', (25, 26), (26, 27))
-arm_f.poly('s', [(27, 26), (30, 25), (31, 28), (28, 29)])
-fist = sp.layer().ell('s', 28, 26, 33, 31).px('S', (29, 30), (30, 31), (28, 29)).px('S', (31, 31))
-
-for L in (cape_b, leg_b, leg_f, torso, hood, head, sword, arm_f, fist):
+for L in (arm_b, leg_b, leg_f, torso, cape):
+    sp.add(L)
+sp.add(ahoge, outlined=False)
+for L in (head, hilt, sword, guard, arm_f, fist):
     sp.add(L)
 sp.save()
