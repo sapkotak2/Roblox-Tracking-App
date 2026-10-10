@@ -1,100 +1,97 @@
-"""Baki - reference redraw for the chibi framework (see tools/chibi.py for the style guide)."""
+"""Baki Hanma (Baki) - reference redraw for the chibi framework (see tools/chibi.py for the style guide).
+Shirtless and very muscular (V-taper), big auburn hair, maroon shorts with a white waistband, white wrist and ankle
+wraps, bare feet, fists-up fighting stance facing right."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from chibi import Sprite
 
 PAL = dict(
-    o=(40, 10, 10),                                                      # outline
-    h=(132, 24, 16), H=(80, 14, 14), l=(132, 24, 16), L=(132, 24, 16),   # hair
-    s=(222, 148, 96), S=(178, 92, 54), D=(178, 92, 54), T=(222, 148, 96),  # skin mid / shade / deep / light
-    e=(250, 246, 236), k=(30, 12, 10), m=(110, 26, 22),                  # eye white, pupil, mouth
-    r=(156, 20, 34), R=(98, 8, 16), q=(156, 20, 34),                     # shorts
-    w=(226, 234, 222), W=(150, 172, 146),                                # wraps
+    o=(44, 14, 10),                                    # outline
+    h=(156, 44, 26), H=(98, 22, 14),                   # hair base / strand lines
+    s=(230, 160, 110), S=(182, 104, 64),               # skin / shade
+    e=(252, 248, 240), k=(46, 22, 14), m=(126, 40, 32),  # eye white, iris, mouth
+    r=(152, 24, 36), R=(98, 12, 22),                   # maroon shorts / shade
+    w=(244, 244, 236), W=(176, 184, 176),              # wraps + waistband / shade
 )
-sp = Sprite('baki', W=38, H=52, palette=PAL)
+sp = Sprite('baki', W=42, H=52, palette=PAL)
 
-# ---------------- back arm, upper part (behind the torso) ----------------
-back_upper = sp.layer().poly('s', [(4, 22), (10, 22), (10, 30), (5, 31), (3, 27)]).v('S', 4, 24, 30).v('S', 5, 29, 30)
 
-# ---------------- legs ----------------
-leg_b = sp.layer()  # back leg, down-left
-leg_b.poly('s', [(10, 38), (17, 38), (14, 43), (11, 47), (5, 47), (6, 42)])
-leg_b.px('S', (13, 41), (12, 43), (11, 45), (14, 40), (15, 39)).px('D', (16, 39), (15, 40)).px('T', (8, 41), (7, 42), (9, 40))
-leg_b.h('w', 5, 11, 45).h('W', 5, 11, 46)
-leg_b.poly('s', [(3, 47), (11, 47), (11, 50), (2, 50)]).h('S', 2, 11, 50).px('T', (4, 47), (5, 47))
-leg_f = sp.layer()  # front leg, knee forward, down-right
-leg_f.poly('s', [(19, 38), (27, 38), (31, 42), (31, 47), (25, 47), (24, 43), (21, 42)])
-leg_f.px('S', (22, 41), (23, 42), (24, 44), (25, 45)).px('D', (20, 40), (21, 41)).px('T', (28, 40), (29, 41), (30, 42), (27, 39))
-leg_f.h('w', 25, 31, 45).h('W', 25, 31, 46)
-leg_f.poly('s', [(25, 47), (33, 47), (35, 50), (25, 50)]).h('S', 25, 35, 50).px('T', (32, 47), (33, 47))
+def seg(L, k, p0, p1):
+    """recolour a straight line of already-filled pixels"""
+    (x0, y0), (x1, y1) = p0, p1
+    n = max(abs(x1 - x0), abs(y1 - y0))
+    L.px(k, *[(round(x0 + (x1 - x0) * t / n), round(y0 + (y1 - y0) * t / n)) for t in range(n + 1)])
+    return L
 
-# ---------------- shorts ----------------
-shorts = sp.layer().poly('r', [(10, 32), (27, 32), (29, 36), (28, 39), (20, 40), (18, 37), (16, 40), (8, 39), (8, 36)])
-shorts.h('w', 10, 27, 32).h('W', 10, 27, 33)
-shorts.v('R', 18, 36, 38).h('R', 9, 16, 38).h('R', 20, 27, 38).v('R', 10, 35, 37)
-shorts.px('q', (21, 34), (22, 34), (23, 35), (24, 35), (13, 35), (14, 35)).px('R', (15, 36), (25, 37), (26, 38))
 
-# ---------------- torso (V-taper: wide traps/shoulders, narrow waist) ----------------
+# ---------------- back arm, upper part (behind the torso, elbow down-left) ----------------
+back_upper = sp.layer()
+back_upper.poly('S', [(7, 21), (13, 21), (13, 29), (9, 31), (6, 27)])
+
+# ---------------- legs: bare, long, with a gap, ankle wraps and bare feet ----------------
+leg_b = sp.layer()  # back leg, steps back-left
+leg_b.poly('s', [(13, 36), (20, 36), (17, 42), (15, 46), (9, 46), (11, 41)])
+seg(leg_b, 'S', (13, 37), (10, 45)); seg(leg_b, 'S', (14, 37), (11, 42))
+leg_b.h('w', 9, 15, 44).h('W', 9, 15, 45)
+leg_b.poly('s', [(8, 46), (15, 46), (15, 50), (4, 50), (5, 48)]).h('S', 4, 15, 50)
+leg_f = sp.layer()  # front leg, knee forward
+leg_f.poly('s', [(21, 36), (28, 36), (31, 41), (31, 46), (25, 46), (24, 41)])
+seg(leg_f, 'S', (22, 37), (24, 41)); leg_f.v('S', 25, 42, 45)
+leg_f.h('w', 25, 31, 44).h('W', 25, 31, 45)
+leg_f.poly('s', [(25, 46), (31, 46), (33, 48), (36, 49), (36, 50), (25, 50)]).h('S', 25, 36, 50)
+
+# ---------------- shorts: compact, white waistband ----------------
+shorts = sp.layer()
+shorts.poly('r', [(13, 31), (27, 31), (28, 36), (28, 38), (21, 38), (20, 36), (19, 38), (12, 38), (12, 35)])
+shorts.h('w', 13, 27, 32).h('W', 13, 27, 33)
+shorts.v('R', 13, 34, 38).v('R', 14, 34, 38).v('R', 20, 35, 37).h('R', 22, 27, 37)
+
+# ---------------- torso: V-taper, wide delts, narrow waist ----------------
 torso = sp.layer()
-torso.poly('s', [(13, 17), (23, 17), (30, 20), (31, 24), (28, 27), (26, 32), (11, 32), (9, 27), (5, 24), (6, 20)])
-torso.ell('s', 4, 19, 12, 27).ell('s', 25, 19, 33, 27)                      # deltoids
-# back half in shade (light comes from the front/right)
-torso.poly('S', [(5, 21), (8, 20), (9, 27), (11, 32), (12, 32), (10, 27)]).v('S', 5, 21, 25)
-# pecs: highlight top, deep shade under
-torso.h('T', 12, 16, 22).h('T', 20, 25, 22).h('T', 13, 15, 23).h('T', 21, 24, 23)
-torso.h('D', 11, 17, 26).h('D', 19, 26, 26).h('S', 12, 16, 25).h('S', 20, 25, 25).v('D', 18, 21, 26)
-# abs: 3 rows of blocks
-torso.v('S', 18, 27, 32)
-for y in (28, 30):
-    torso.h('S', 13, 17, y).h('S', 19, 24, y)
-torso.px('T', (14, 27), (15, 27), (20, 27), (21, 27), (14, 29), (20, 29), (21, 29), (14, 31), (20, 31))
-torso.v('S', 12, 27, 31).v('S', 25, 27, 31)                                 # obliques
-torso.px('T', (27, 20), (28, 20), (29, 21), (30, 22), (8, 20))             # shoulder highlights
-torso.px('S', (31, 25), (32, 25), (30, 26)).px('D', (12, 18), (24, 18))      # delt shade, trap creases
-torso.rect('s', 15, 15, 21, 18).v('S', 15, 15, 18).px('S', (16, 18)).px('T', (19, 16), (20, 16))  # neck
+torso.poly('s', [(14, 19), (25, 19), (31, 22), (29, 27), (26, 32), (15, 32), (12, 27), (9, 22)])
+torso.ell('s', 7, 19, 14, 27).ell('s', 25, 19, 33, 27)                       # deltoids
+torso.poly('S', [(8, 21), (11, 20), (12, 27), (15, 32), (13, 32), (10, 27)])  # back side in shade
+torso.h('S', 14, 18, 26).h('S', 20, 27, 26)                                   # under the pecs
+torso.v('S', 19, 22, 32)                                                      # centre line
+torso.h('S', 16, 18, 29).h('S', 20, 24, 29)                                   # one ab line
+torso.rect('s', 16, 16, 23, 20).v('S', 16, 16, 19)                            # thick neck
 
 # ---------------- head ----------------
 head = sp.layer()
-head.ell('h', 5, 2, 30, 17)
-for pts in ([(7, 6), (4, 1), (12, 4)], [(11, 3), (10, -1), (16, 2)], [(16, 2), (19, -1), (21, 2)],
-            [(21, 3), (26, -1), (26, 5)], [(25, 4), (32, 2), (29, 8)], [(28, 7), (34, 7), (29, 12)],
-            [(6, 9), (3, 9), (6, 13)], [(6, 12), (4, 16), (9, 15)]):
-    head.poly('h', pts)
-head.poly('s', [(13, 8), (28, 8), (29, 12), (28, 16), (25, 19), (16, 19), (13, 15)])   # face, square jaw
-for pts in ([(12, 6), (19, 6), (15, 12)], [(17, 6), (24, 6), (20, 10)], [(22, 6), (30, 7), (27, 10)],
-            [(11, 7), (14, 7), (13, 14)]):
-    head.poly('h', pts)                                                   # fringe spikes
-head.poly('H', [(7, 10), (11, 8), (10, 15)]).poly('H', [(8, 4), (13, 4), (11, 8)])
-head.px('H', (16, 10), (20, 9), (27, 9), (12, 12), (8, 13), (9, 14), (4, 9), (3, 15))
-head.px('l', (14, 3), (15, 3), (16, 4), (20, 3), (21, 4), (24, 3), (25, 4), (27, 5), (10, 6), (18, 7), (29, 8))
-head.px('L', (15, 2), (20, 2), (25, 2), (30, 7))
-head.px('s', (14, 12), (14, 13)).px('S', (14, 14), (13, 13))                 # ear
-# fierce brows angled down to the nose
-head.h('k', 16, 19, 10).px('k', (20, 11), (21, 11)).h('k', 23, 26, 10).px('k', (22, 11))
-# eyes: far eye smaller, near eye larger, both narrowed
-head.px('e', (17, 12), (18, 12), (19, 12)).px('k', (19, 12))
-head.px('e', (23, 12), (24, 12), (25, 12), (26, 12)).px('k', (25, 12))
-head.h('S', 17, 19, 13).h('S', 23, 26, 13).h('S', 17, 19, 11).h('S', 24, 26, 11)
-head.px('S', (27, 13), (27, 14)).px('D', (26, 15), (27, 15))                 # nose
-head.v('S', 15, 14, 17).px('S', (16, 18), (17, 18))                          # cheek / jaw shade
-head.h('m', 22, 26, 16).px('e', (24, 16), (25, 16)).px('m', (26, 15))         # tight smirk, teeth on one side
-head.h('S', 19, 23, 18).px('T', (21, 9), (22, 9), (26, 9), (28, 11))
+head.ell('h', 6, 1, 32, 20)
+for pts in ([(8, 7), (2, 3), (13, 3)], [(13, 3), (15, -1), (21, 2)], [(21, 2), (27, -1), (28, 4)],
+            [(28, 4), (35, 4), (31, 9)], [(7, 11), (3, 13), (8, 17)]):
+    head.poly('h', pts)                                                       # a few big, blunt spikes
+head.poly('s', [(15, 8), (29, 7), (31, 11), (31, 16), (27, 20), (20, 21), (16, 18), (14, 13)])  # face
+for pts in ([(14, 6), (20, 6), (17, 10)], [(19, 6), (25, 6), (22, 10)], [(24, 6), (31, 6), (29, 10)],
+            [(12, 6), (16, 6), (15, 12)]):
+    head.poly('h', pts)                                                       # short fringe spikes + sideburn
+seg(head, 'H', (8, 5), (12, 9)); seg(head, 'H', (20, 2), (18, 6)); seg(head, 'H', (6, 13), (10, 16))
+seg(head, 'H', (27, 2), (26, 5))
+head.rect('s', 16, 12, 17, 14).px('S', (16, 13), (16, 14))                    # ear
+head.h('S', 17, 30, 10)                                                       # shade under the fringe
+# fierce brows angled down to the nose; 3-row eyes with whites
+head.px('o', (18, 10), (19, 10), (20, 11), (21, 11), (24, 11), (25, 11), (26, 10), (27, 10), (28, 10))
+head.h('o', 19, 21, 12).px('e', (19, 13), (19, 14)).px('k', (20, 13), (21, 13), (20, 14), (21, 14))
+head.h('o', 24, 28, 12).px('e', (24, 13), (25, 13), (28, 13), (24, 14), (25, 14), (28, 14))
+head.px('k', (26, 13), (27, 13), (26, 14), (27, 14))
+head.px('S', (31, 15), (31, 16))                                              # nose
+head.h('m', 25, 28, 18)                                                       # small determined mouth
+head.v('S', 17, 16, 18).h('S', 18, 20, 19)                                    # jaw shade (back side)
 
-# ---------------- back arm, forearm across the chest + fist guarding the jaw ----------------
+# ---------------- back arm, forearm rising across the body + fist guarding the chin ----------------
 back_fore = sp.layer()
-back_fore.poly('s', [(6, 29), (15, 25), (17, 27), (9, 32)]).v('S', 8, 30, 31).px('S', (10, 30), (12, 29))
-back_fore.h('w', 14, 16, 24).h('W', 14, 16, 25).px('W', (16, 26))
-back_fore.ell('s', 15, 20, 21, 25).px('S', (16, 24), (17, 24), (18, 24), (19, 24)).px('T', (17, 21), (18, 21), (19, 21))
-back_fore.px('D', (20, 22), (20, 23))
+back_fore.poly('s', [(7, 27), (12, 25), (18, 24), (19, 27), (12, 31), (8, 31)]).h('S', 9, 12, 30)
+back_fore.rect('w', 16, 23, 19, 24).rect('W', 16, 25, 19, 26)                 # wrist wrap
+back_fore.ell('s', 16, 17, 23, 24).h('S', 17, 22, 23).px('S', (18, 20), (20, 20))
 
-# ---------------- front arm: elbow out, fist raised in front of the face ----------------
+# ---------------- front arm: elbow down, forearm up, fist raised forward ----------------
 front = sp.layer()
-front.poly('s', [(25, 22), (32, 22), (33, 29), (29, 30)]).v('S', 26, 24, 29).px('T', (30, 23), (31, 24))
-front.poly('s', [(29, 28), (33, 28), (36, 20), (32, 19)]).v('S', 30, 24, 28)
-front.h('w', 31, 35, 20).h('W', 31, 35, 21)
-front.ell('s', 31, 13, 37, 19).px('S', (31, 18), (32, 18), (33, 18), (37, 17), (37, 16)).px('T', (33, 14), (34, 14))
-front.px('D', (32, 16), (33, 17))
+front.poly('s', [(28, 21), (33, 21), (36, 29), (32, 31), (30, 26)]).v('S', 29, 23, 25).px('S', (30, 26), (31, 27))
+front.poly('s', [(33, 22), (38, 22), (38, 25), (36, 31), (32, 31), (32, 27)]).v('S', 33, 25, 30)
+front.rect('w', 32, 21, 38, 21).rect('W', 32, 22, 38, 22)                     # wrist wrap
+front.ell('s', 32, 14, 39, 21).h('S', 33, 38, 20).px('S', (34, 17), (36, 17))
 
-for L in (back_upper, leg_b, leg_f, shorts, torso, head, back_fore, front):
+for L in (back_upper, leg_b, leg_f, torso, shorts, head, back_fore, front):
     sp.add(L)
 sp.save()
