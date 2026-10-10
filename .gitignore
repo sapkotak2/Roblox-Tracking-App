@@ -7,3 +7,6 @@ sprites/refs/faces/*/
 sprites/refs/batch3x/*/
 sprites/refs/batch3y/*/
 sprites/refs/shikamaru/*/
+sprites/refs/redraw/*/*.png
+sprites/refs/redraw/*/*.jpg
+sprites/refs/redraw/*/_dl

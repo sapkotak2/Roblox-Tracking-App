@@ -118,12 +118,23 @@ def sheet(name, scale=8):
     if name != 'baki' and os.path.exists(f'{OUT}/baki.png'): items.insert(2, ('baki (ref)', f'{OUT}/baki.png'))
     ims = [(n, Image.open(p).convert('RGBA')) for n, p in items]
     Hh = max(i.height for _, i in ims) * scale
-    sh = Image.new('RGBA', (sum(i.width * scale + 24 for _, i in ims) + 24, Hh + 40), (214, 222, 234, 255))
+    # official reference art (refs/redraw/<name>/, from tools/fetch_wiki_refs.py or picked by hand), same height
+    refs = []
+    rdir = f'{R}/refs/redraw/{name}'
+    if os.path.isdir(rdir):
+        pick = [l.strip() for l in open(f'{rdir}/USE.txt')] if os.path.exists(f'{rdir}/USE.txt') else sorted(f for f in os.listdir(rdir) if f.endswith('.png'))[:3]
+        for f in pick:
+            if f and os.path.exists(f'{rdir}/{f}'):
+                im = Image.open(f'{rdir}/{f}').convert('RGBA'); im.thumbnail((int(Hh * 1.1), Hh)); refs.append(('ref ' + f[:18], im))
+    sh = Image.new('RGBA', (sum(i.width * scale + 24 for _, i in ims) + sum(i.width + 24 for _, i in refs) + 24, Hh + 40), (214, 222, 234, 255))
     x = 24
     for n, i in ims:
         b = i.resize((i.width * scale, i.height * scale), Image.NEAREST)
         sh.alpha_composite(b, (x, 20 + Hh - b.height)); ImageDraw.Draw(sh).text((x, 4), n, fill=(0, 0, 0, 255))
         x += b.width + 24
+    for n, i in refs:
+        sh.alpha_composite(i, (x, 20 + Hh - i.height)); ImageDraw.Draw(sh).text((x, 4), n, fill=(160, 0, 0, 255))
+        x += i.width + 24
     sh.save(f'{OUT}/{name}_cmp.png')
 
 
