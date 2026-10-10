@@ -1,99 +1,103 @@
 """Erza Scarlet (Fairy Tail) - chibi redraw (see tools/chibi.py for the style guide).
-Long scarlet hair down the back, Heart Kreuz armour (flat silver + blue cross), blue skirt, black boots, sword ready."""
+Matched to refs/redraw/erza (Heart Kreuz full body + face close-up), checklist in refs/redraw/erza/NOTES.md:
+sharp narrow dark eyes with heavy lashes, brows angled down, stern flat mouth, pointed chin; long straight scarlet hair
+with a heavy lock over the far side of the face and a lock in front of the shoulder; silver Heart Kreuz armour with high
+collar, gold cross, round grooved pauldrons, black elbow bands, faulds + brown belt; navy pleated skirt; black heeled
+knee boots; broadsword with a pale blue blade held low and forward."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from chibi import Sprite
 
 PAL = dict(
-    o=(44, 14, 26),                                   # outline
-    h=(214, 36, 48), H=(140, 16, 36), l=(255, 120, 110),  # hair base / shade / shine
-    s=(252, 214, 180), S=(226, 156, 124),             # skin
-    e=(255, 255, 255), k=(52, 22, 26), b=(150, 72, 34), m=(150, 46, 56),  # eye white, lash/pupil, iris, mouth
-    a=(214, 220, 232), A=(132, 140, 162),             # silver armour
-    c=(44, 100, 210), C=(22, 54, 136),                # blue cross / skirt
-    n=(52, 50, 64), N=(96, 98, 120),                  # boots
-    g=(244, 186, 52),                                 # gold hilt
+    o=(40, 12, 24),                                   # outline
+    h=(206, 30, 46), H=(124, 10, 32),                 # scarlet hair / shade (also the stern mouth line)
+    s=(252, 220, 192), S=(224, 160, 132),             # skin
+    e=(255, 255, 255), k=(30, 14, 20), b=(92, 38, 40),  # eye white, lash/pupil, very dark brown iris
+    a=(220, 224, 234), A=(140, 146, 166),             # silver armour
+    g=(240, 184, 40),                                 # gold cross
+    u=(40, 62, 160), U=(22, 32, 96),                  # navy skirt
+    n=(36, 34, 44), d=(128, 76, 40),                  # black boots / elbow bands, brown belt
+    B=(196, 222, 246), G=(110, 140, 176),             # pale blue blade, blue-grey guard
 )
-sp = Sprite('erza', W=48, H=52, palette=PAL)
+sp = Sprite('erza', W=50, H=52, palette=PAL)
 L = sp.layer
 
-# ---------------- long hair down the back ----------------
+# ---------------- long straight hair down the back (past the waist) ----------------
 back_hair = L()
-back_hair.poly('h', [(12, 5), (17, 12), (17, 24), (15, 32), (11, 37), (7, 36), (6, 30), (6, 18), (8, 10)])
-back_hair.poly('H', [(7, 18), (9, 18), (9, 35), (8, 36), (7, 32)])               # back side in shade
-back_hair.v('H', 13, 22, 33).px('H', (12, 34))                                     # strand line
+back_hair.poly('h', [(12, 5), (18, 12), (18, 26), (16, 36), (13, 40), (9, 39), (8, 32), (8, 18), (9, 10)])
+back_hair.poly('H', [(8, 20), (10, 20), (10, 38), (9, 38), (8, 32)])
+back_hair.v('H', 13, 30, 38)
+back_hair.poly('h', [(27, 10), (33, 10), (34, 22), (33, 31), (30, 33), (29, 24)]).v('H', 31, 22, 31)   # hair falling behind the near shoulder
 
-# ---------------- back arm (beside the body, gauntlet) ----------------
+# ---------------- back arm: pauldron, black elbow band, gauntlet ----------------
 back_arm = L()
-back_arm.poly('s', [(12, 24), (16, 24), (16, 29), (12, 29)]).v('S', 13, 25, 29)
-back_arm.poly('A', [(11, 29), (16, 29), (16, 35), (11, 35)]).v('a', 15, 30, 34).h('a', 12, 15, 30)   # gauntlet: steel, lit edge
+back_arm.rect('n', 11, 25, 15, 28)
+back_arm.poly('A', [(10, 28), (15, 28), (15, 34), (10, 34)]).v('a', 14, 29, 33).h('a', 11, 14, 29)
 
-# ---------------- legs (bare thighs, black boots), clear gap between ----------------
+# ---------------- legs: bare knees, black heeled knee boots, wide stance ----------------
 leg_b = L()
-leg_b.poly('s', [(16, 36), (22, 36), (20, 42), (15, 42)]).v('S', 16, 37, 42)
-leg_b.poly('n', [(14, 42), (20, 42), (19, 47), (14, 47)])
-leg_b.poly('n', [(10, 47), (19, 47), (19, 50), (10, 50)])
-leg_b.v('N', 18, 43, 48).h('N', 11, 13, 48)
+leg_b.poly('s', [(15, 38), (21, 38), (19, 43), (14, 43)]).poly('S', [(15, 38), (17, 38), (16, 43), (14, 43)])
+leg_b.poly('n', [(13, 42), (19, 42), (18, 47), (13, 47)])
+leg_b.poly('n', [(9, 47), (18, 47), (18, 49), (9, 49)]).rect('n', 15, 49, 18, 50).rect('n', 9, 49, 11, 50)  # sole + heel
+leg_b.v('A', 17, 43, 46)
 leg_f = L()
-leg_f.poly('s', [(23, 36), (28, 36), (30, 42), (25, 42)]).v('S', 25, 38, 42).v('S', 24, 37, 38)
-leg_f.poly('n', [(25, 42), (30, 42), (31, 47), (26, 47)])
-leg_f.poly('n', [(26, 47), (34, 47), (35, 50), (26, 50)])
-leg_f.v('N', 30, 43, 47).h('N', 31, 33, 48)
+leg_f.poly('s', [(24, 38), (30, 38), (31, 43), (26, 43)]).v('S', 26, 39, 43)
+leg_f.poly('n', [(26, 42), (32, 42), (32, 47), (27, 47)])
+leg_f.poly('n', [(26, 47), (35, 47), (36, 49), (26, 49)]).rect('n', 26, 49, 29, 50).rect('n', 33, 49, 36, 50)
+leg_f.v('A', 31, 43, 46)
 
-# ---------------- skirt ----------------
+# ---------------- navy pleated skirt (flared, to mid-thigh) ----------------
 skirt = L()
-skirt.poly('c', [(17, 30), (28, 30), (32, 37), (13, 37)])
-skirt.poly('C', [(17, 30), (19, 30), (17, 37), (13, 37)])                         # back side shade
-skirt.v('C', 22, 33, 37).v('C', 27, 33, 37)                                        # pleat lines
+skirt.poly('u', [(17, 29), (28, 29), (33, 39), (12, 39)])
+skirt.poly('U', [(17, 29), (19, 29), (17, 39), (12, 39)])
+skirt.v('U', 22, 34, 39).v('U', 27, 34, 39).v('U', 31, 36, 39)
 
-# ---------------- torso: breastplate ----------------
+# ---------------- torso: breastplate with high collar, gold cross, brown belt, short faulds ----------------
 torso = L()
-torso.rect('s', 20, 17, 24, 22).v('S', 20, 17, 22).v('S', 21, 19, 22)             # neck
-torso.poly('a', [(17, 21), (28, 21), (29, 25), (27, 31), (18, 31), (17, 25)])
-torso.poly('A', [(17, 21), (20, 21), (20, 31), (18, 31), (17, 25)])                # back side shade
-torso.h('A', 21, 28, 27)                                                           # under-bust line
-torso.v('c', 25, 22, 26).h('c', 23, 27, 24)                                        # blue cross
+torso.rect('s', 21, 18, 24, 21).v('S', 21, 18, 21)                                  # neck
+torso.poly('a', [(17, 21), (28, 21), (29, 25), (27, 29), (18, 29), (17, 25)])
+torso.poly('A', [(17, 21), (20, 21), (20, 29), (18, 29), (17, 25)])                 # back side shade
+torso.h('A', 21, 27, 27)                                                            # plate line
+torso.v('g', 24, 22, 28).h('g', 22, 26, 24).px('H', (25, 22))                       # gold cross, long bar, red heart mark
+torso.h('d', 18, 28, 29)                                                            # brown belt
+torso.poly('a', [(18, 30), (29, 30), (30, 33), (17, 33)])                           # faulds over the skirt
+torso.v('A', 18, 30, 33).v('A', 19, 30, 33).v('d', 21, 30, 32).v('d', 26, 30, 32)
+collar = L().rect('a', 20, 18, 25, 21).v('A', 20, 18, 21).v('A', 21, 18, 21)        # high neck guard
 
-# ---------------- back pauldron ----------------
-pauld_b = L().ell('a', 11, 20, 19, 26).poly('A', [(11, 23), (19, 24), (18, 26), (12, 26)])
+# ---------------- back pauldron (round, grooved) ----------------
+pauld_b = L().poly('a', [(11, 21), (13, 19), (18, 19), (20, 21), (20, 26), (10, 26)]).h('A', 11, 19, 22).h('A', 10, 20, 25).h('A', 10, 20, 26).v('A', 11, 21, 26)
 
 # ---------------- head ----------------
 head = L()
 head.ell('h', 10, 0, 33, 18)
-head.poly('s', [(16, 7), (30, 7), (31, 11), (31, 13), (29, 16), (25, 19), (21, 19), (18, 16), (16, 12)])  # face
-# straight parted bangs, cut above the eyes
-for pts in ([(14, 2), (22, 2), (20, 8), (17, 10)], [(20, 2), (27, 2), (25, 8), (22, 7)],
-            [(25, 2), (32, 3), (32, 8), (29, 9), (27, 7)]):
-    head.poly('h', pts)
-head.poly('h', [(11, 5), (18, 8), (18, 20), (15, 23), (12, 18)])                  # side lock over the ear
-head.v('H', 14, 10, 21).v('H', 16, 13, 20)
-head.px('H', (20, 6), (21, 5), (26, 5), (25, 6), (13, 4), (12, 5))
-head.px('l', (22, 1), (23, 1), (26, 2), (27, 2))
-# brows, eyes (far small, near big), nose, mouth
-head.h('k', 20, 21, 9).h('k', 25, 28, 9)
-head.h('k', 19, 22, 11).px('e', (20, 12), (20, 13), (20, 14)).px('b', (21, 12), (21, 13), (21, 14))
+head.poly('s', [(16, 7), (30, 7), (31, 11), (31, 13), (29, 16), (26, 19), (24, 20), (22, 19), (18, 16), (16, 12)])  # slim face, pointed chin
+# heavy bangs parted near the middle; the far-side lock sweeps down the side of the face to the jaw
+head.poly('h', [(13, 2), (23, 2), (23, 6), (20, 8), (19, 13), (18, 18), (16, 20), (14, 18)])
+head.poly('h', [(21, 2), (29, 3), (28, 6), (24, 7)])
+head.poly('h', [(26, 2), (32, 4), (33, 9), (32, 14), (30, 7)])
+head.v('H', 16, 12, 19).v('H', 14, 9, 17).px('H', (22, 3), (22, 4), (21, 5), (27, 4), (26, 5), (31, 7), (31, 8))
+# stern brows angled down toward the middle
+head.px('k', (19, 8), (20, 8), (21, 9)).px('k', (24, 9), (25, 9), (26, 8), (27, 8), (28, 8))
+# sharp eyes: heavy lash line with an outer flick, very dark iris, 2 rows tall
+head.h('k', 20, 22, 11).px('e', (21, 12), (21, 13)).px('b', (22, 12), (22, 13))
 head.h('k', 24, 28, 11).px('k', (29, 10))
-head.px('e', (24, 12), (24, 13), (24, 14), (27, 12), (27, 13), (27, 14))
-head.px('b', (25, 12), (25, 13), (26, 13), (25, 14), (26, 14)).px('k', (26, 12))
-head.px('S', (30, 14), (30, 15))
-head.h('m', 26, 27, 16)
-head.px('S', (21, 17), (22, 18))
+head.px('e', (24, 12), (24, 13), (27, 12), (27, 13)).px('b', (25, 12), (25, 13), (26, 13)).px('k', (26, 12))
+head.px('S', (30, 14), (30, 15))                                                    # nose
+head.h('H', 25, 26, 17)                                                             # flat stern mouth
+head.px('S', (22, 18), (23, 19))
 
-# ---------------- sword (vertical guard stance, held at the waist) ----------------
-sword = L()
-sword.poly('a', [(35, 25), (39, 25), (39, 7), (37, 4), (35, 7)])                   # blade
-sword.v('A', 36, 7, 24).v('e', 38, 7, 24)
-sword.rect('g', 32, 25, 41, 26)                                                     # crossguard
-sword.rect('g', 35, 27, 39, 35)                                                     # grip / pommel
+# ---------------- sword: broadsword held low at the side, pale blue blade pointing down ----------------
+sword = L().poly('B', [(37, 35), (41, 35), (41, 47), (39, 50), (37, 47)]).v('e', 39, 36, 47)
+grip = L().rect('G', 36, 25, 39, 29)                                                 # grip + pommel above the fist
+guard = L().rect('G', 34, 33, 44, 35)                                                # crossguard
 
-# ---------------- front pauldron + front arm (fist on the grip) ----------------
+# ---------------- front arm: black elbow band, steel gauntlet, fist on the grip; round pauldron ----------------
 front = L()
-front.poly('s', [(28, 24), (32, 24), (32, 30), (28, 30)]).v('S', 28, 25, 30)
-front.rect('A', 28, 29, 35, 33).h('a', 29, 35, 30)                                 # gauntlet forearm
-front.ell('a', 26, 20, 34, 26).poly('A', [(26, 23), (34, 24), (33, 26), (27, 26)])  # front pauldron
-fist = L().rect('A', 34, 27, 39, 32).h('a', 35, 38, 28).v('a', 38, 28, 30)        # gauntlet fist on the grip
+front.rect('n', 27, 25, 31, 28)
+front.poly('A', [(28, 28), (32, 27), (37, 29), (37, 33), (30, 32)]).h('a', 30, 35, 29)
+fist = L().rect('A', 35, 28, 40, 33).h('a', 36, 39, 29).v('a', 39, 29, 31)
+pauld_f = L().poly('a', [(25, 21), (27, 19), (32, 19), (34, 21), (35, 26), (25, 26)]).h('A', 26, 34, 22).h('A', 25, 35, 25).h('A', 25, 35, 26)
 
-for lay in (back_hair, back_arm, leg_b, leg_f, skirt, torso, pauld_b, head, sword, front):
+for lay in (back_hair, back_arm, leg_b, leg_f, skirt, torso, collar, pauld_b, head, sword, grip, front, guard, fist, pauld_f):
     sp.add(lay)
-sp.add(fist)
 sp.save()

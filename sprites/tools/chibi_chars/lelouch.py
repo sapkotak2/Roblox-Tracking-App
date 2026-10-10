@@ -1,19 +1,19 @@
-"""Lelouch vi Britannia as Zero, helmet off (Code Geass) - chibi redraw (see tools/chibi.py for the style guide).
-Black hair with bangs, purple eyes with the left (far) eye glowing red with Geass, dark purple suit with a high
-collar and gold trim, black cape with red lining flowing behind, arm thrust forward."""
+"""Lelouch Lamperouge / vi Britannia (Code Geass) - chibi redraw (see tools/chibi.py for the style guide; checklist
+in refs/redraw/lelouch/NOTES.md, built from the infobox and anime stills).
+Black hair with pointed bangs falling between the eyes and locks framing the face, large clear purple eyes (the left
+one, far side, lit red by Geass), black Ashford Academy uniform with a tall collar, gold trim lines, gold collar
+marks and buttons, arm thrust forward in the Geass command pose."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from chibi import Sprite
 
 PAL = dict(
-    o=(18, 12, 26),                                    # outline
-    h=(46, 42, 64), H=(22, 18, 34), j=(116, 112, 150),  # hair base / strands / shine
-    s=(248, 218, 194), S=(210, 168, 150),              # skin / shade
-    e=(252, 250, 255), p=(130, 70, 200), r=(220, 34, 50), m=(160, 96, 96),  # eye white, purple iris, red (Geass + lining), mouth
-    d=(84, 56, 126), D=(52, 34, 82),                   # purple suit / shade
-    g=(236, 194, 78),                                  # gold trim
-    c=(42, 38, 54), C=(24, 22, 32),                    # black cape / shade (also boots)
-    R=(140, 18, 36),                                   # red lining shade
+    o=(14, 12, 20),                                    # outline
+    h=(44, 38, 50), H=(18, 14, 24),                    # hair (brown-black) / strands
+    s=(250, 224, 202), S=(214, 174, 154), m=(172, 108, 104),  # skin / shade / mouth
+    e=(252, 250, 255), p=(150, 78, 222), r=(226, 36, 56),     # eye white / purple iris / Geass red
+    j=(50, 54, 62), J=(28, 30, 36),                    # black uniform / shade
+    g=(232, 192, 84),                                  # gold trim
 )
 sp = Sprite('lelouch', W=46, H=52, palette=PAL)
 
@@ -26,73 +26,66 @@ def seg(L, k, p0, p1):
     return L
 
 
-# ---------------- cape flowing behind: black outside, red lining showing on the flared edge ----------------
-cape = sp.layer()
-cape.poly('c', [(12, 19), (22, 19), (22, 32), (19, 45), (8, 47), (1, 46), (4, 36), (8, 26)])
-cape.poly('r', [(1, 46), (4, 36), (8, 26), (11, 21), (12, 26), (9, 36), (8, 45)])     # lining on the flared edge
-cape.poly('R', [(1, 46), (4, 36), (8, 26), (9, 25), (6, 36), (4, 45)])
-seg(cape, 'C', (15, 24), (13, 44)); seg(cape, 'C', (19, 30), (17, 44))              # two folds
+# ---------------- back arm (sleeve + hand, hanging behind) ----------------
+back_arm = sp.layer()
+back_arm.poly('J', [(10, 21), (15, 21), (15, 29), (11, 31), (8, 26)])
+back_arm.h('g', 9, 13, 30)
+back_arm.ell('s', 8, 30, 13, 35).h('S', 9, 12, 34)
 
-# ---------------- legs (dark purple trousers, black boots) ----------------
+# ---------------- legs: black trousers, dark shoes ----------------
 leg_b = sp.layer()
-leg_b.poly('D', [(14, 33), (20, 33), (18, 40), (15, 46), (9, 46), (12, 40)])
-leg_b.poly('C', [(8, 44), (16, 44), (16, 50), (5, 50), (5, 47)]).h('c', 10, 14, 45)
+leg_b.poly('J', [(14, 34), (20, 34), (17, 40), (14, 46), (9, 46), (11, 40)])
+leg_b.poly('J', [(8, 45), (15, 45), (15, 50), (4, 50), (5, 47)]).h('j', 9, 13, 46)
 leg_f = sp.layer()
-leg_f.poly('d', [(21, 33), (26, 33), (29, 40), (30, 46), (24, 46), (23, 40)])
-seg(leg_f, 'D', (22, 34), (24, 39)); leg_f.v('D', 24, 40, 45)
-leg_f.poly('C', [(23, 44), (31, 44), (32, 47), (35, 48), (35, 50), (23, 50)]).h('c', 25, 30, 45)
+leg_f.poly('j', [(21, 34), (27, 34), (29, 40), (30, 46), (25, 46), (24, 40)])
+seg(leg_f, 'J', (22, 35), (24, 39)); leg_f.v('J', 25, 40, 45)
+leg_f.poly('J', [(24, 45), (31, 45), (33, 47), (35, 48), (35, 50), (24, 50)]).h('j', 26, 30, 46)
 
-# ---------------- torso: slim purple tunic, gold trim down the front and at the waist ----------------
+# ---------------- torso: slim black jacket to the hips, off-centre gold line, gold hem, buttons ----------------
 torso = sp.layer()
-torso.poly('d', [(13, 21), (26, 21), (25, 27), (25, 35), (15, 35), (14, 27)])
-torso.poly('D', [(13, 21), (16, 21), (17, 35), (15, 35), (14, 27)])                 # back side in shade
-torso.v('g', 22, 22, 35).h('g', 15, 24, 32)                                         # gold trim
-torso.v('D', 23, 24, 31)
-skirt = sp.layer()  # tunic flap over the front thigh
-skirt.poly('d', [(21, 33), (26, 33), (29, 39), (24, 40), (22, 37)])
-seg(skirt, 'g', (22, 34), (24, 39)); skirt.h('g', 24, 28, 39)
+torso.poly('j', [(13, 21), (26, 21), (26, 28), (27, 36), (13, 36), (13, 28)])
+torso.poly('J', [(13, 21), (16, 21), (16, 36), (13, 36)])                           # back side in shade
+torso.v('g', 19, 22, 27).v('g', 24, 22, 27).h('g', 14, 19, 27).h('g', 24, 26, 27)  # gold lines down from the collar, then outward
+torso.h('g', 14, 26, 35)                                                            # gold hem
+torso.px('g', (16, 30), (25, 30))                                                   # gold buttons
+torso.v('J', 21, 28, 34)
 
 # ---------------- head ----------------
 head = sp.layer()
-head.rect('S', 18, 18, 22, 22)                                                      # neck
-head.ell('h', 9, 1, 31, 19)
-head.ell('h', 12, 0, 29, 12)
-head.poly('h', [(9, 8), (15, 8), (15, 20), (12, 21), (8, 18), (7, 12)])            # hair at the back, to the nape
-head.poly('s', [(15, 8), (29, 7), (31, 11), (31, 16), (27, 20), (20, 21), (16, 18), (14, 13)])  # face
-# swooping bangs ending in sharp points
-for pts in ([(14, 5), (21, 5), (18, 11)], [(19, 5), (25, 5), (22, 10)], [(23, 5), (30, 5), (27, 10)],
-            [(28, 5), (32, 7), (31, 11)], [(13, 6), (17, 6), (16, 19)]):
+head.rect('s', 18, 17, 22, 21).v('S', 18, 17, 20)                                   # neck
+head.ell('h', 9, 0, 30, 16)
+head.poly('h', [(9, 7), (16, 7), (16, 19), (13, 18), (10, 20), (9, 16), (6, 17), (8, 12)])  # pointed locks at the nape
+head.poly('s', [(16, 8), (29, 7), (31, 11), (31, 15), (28, 19), (25, 21), (21, 20), (18, 17), (16, 13)])  # narrow face, pointed chin
+# pointed bangs: long tips, one falling between the eyes; a lock framing the far cheek
+for pts in ([(14, 4), (21, 4), (18, 11)], [(19, 4), (25, 4), (23, 12)], [(24, 4), (31, 5), (28, 10)],
+            [(28, 5), (33, 7), (31, 11)], [(14, 6), (18, 6), (17, 18)]):
     head.poly('h', pts)
-seg(head, 'H', (12, 4), (13, 10)); seg(head, 'H', (10, 11), (12, 18)); seg(head, 'H', (19, 2), (17, 8))
-seg(head, 'H', (25, 3), (23, 7))
-head.px('j', (20, 2), (21, 2), (15, 3))
-head.h('S', 18, 30, 10).px('S', (19, 11), (23, 11), (24, 11))                       # shade under the bangs
-# brows; far (left) eye glows red with Geass, near eye purple
-head.h('o', 19, 21, 11).h('o', 25, 28, 11)
+seg(head, 'H', (12, 4), (14, 10)); seg(head, 'H', (18, 2), (17, 7)); seg(head, 'H', (22, 5), (23, 10))
+seg(head, 'H', (11, 12), (12, 18)); seg(head, 'H', (27, 4), (28, 7))
+head.h('S', 18, 30, 10).px('S', (19, 11), (20, 11), (25, 11))                       # shade under the bangs
+# thin straight brows; large half-lidded eyes: far eye Geass red, near eye clear purple
+head.px('o', (20, 10), (21, 10), (26, 10), (27, 10), (28, 10))
 head.h('o', 19, 21, 12).px('e', (19, 13)).px('r', (20, 13), (21, 13), (20, 14), (21, 14)).px('e', (19, 14))
-head.h('o', 24, 28, 12).px('e', (24, 13), (25, 13), (28, 13), (24, 14), (25, 14), (28, 14))
-head.px('p', (26, 13), (27, 13), (26, 14), (27, 14))
-head.px('S', (31, 15), (31, 16))                                                    # nose
-head.h('m', 26, 27, 18)                                                             # mouth
-head.h('S', 18, 20, 19)                                                             # jaw shade
+head.h('o', 24, 28, 12).px('e', (24, 13), (24, 14), (28, 13), (28, 14))
+head.px('p', (25, 13), (26, 13), (27, 13), (25, 14), (26, 14), (27, 14))
+head.px('S', (31, 15))                                                              # nose
+head.h('m', 25, 26, 18).px('m', (27, 17))                                           # small smug smile
+head.h('S', 19, 21, 18)                                                             # jaw shade
 
-# ---------------- high Zero collar with gold edge ----------------
+# ---------------- tall collar, gold edge and gold collar marks ----------------
 collar = sp.layer()
-collar.poly('d', [(14, 15), (18, 18), (22, 20), (26, 18), (28, 22), (22, 24), (14, 23)])
-collar.poly('D', [(14, 15), (18, 18), (18, 23), (14, 23)])
-collar.h('g', 15, 27, 22).px('g', (26, 19), (27, 20), (27, 21))
+collar.poly('j', [(15, 16), (18, 18), (22, 19), (26, 17), (27, 22), (22, 23), (15, 22)])
+collar.poly('J', [(15, 16), (18, 18), (18, 22), (15, 22)])
+collar.h('g', 16, 26, 22).px('g', (25, 19), (25, 20), (24, 20), (17, 19))
 
-# ---------------- back arm: a sliver of the cape-covered shoulder ----------------
-# (the back arm is hidden by the cape)
-
-# ---------------- front arm: thrust forward, open hand giving a command ----------------
+# ---------------- front arm: thrust forward, open palm (Geass command) ----------------
 front = sp.layer()
-front.poly('d', [(24, 21), (29, 21), (35, 23), (35, 27), (29, 27), (26, 26)])
-seg(front, 'D', (25, 24), (34, 26)); seg(front, 'D', (26, 25), (29, 26))
-front.v('g', 33, 23, 27)                                                            # gold cuff
-front.poly('s', [(34, 20), (38, 19), (40, 20), (40, 27), (35, 28)])                 # open palm thrust forward
-front.h('S', 35, 39, 27).px('S', (38, 22), (38, 23), (38, 25))                      # finger lines
+front.poly('j', [(24, 21), (29, 21), (35, 23), (35, 27), (29, 27), (26, 26)])
+seg(front, 'J', (25, 24), (34, 26))
+front.v('g', 34, 23, 27)                                                            # gold cuff
+front.poly('s', [(35, 20), (39, 19), (41, 20), (41, 27), (36, 28)])                 # open palm
+front.h('S', 36, 40, 27).px('S', (39, 22), (39, 23), (39, 25))                      # finger lines
 
-for L in (cape, leg_b, leg_f, torso, skirt, head, collar, front):
+for L in (back_arm, leg_b, leg_f, torso, head, collar, front):
     sp.add(L)
 sp.save()

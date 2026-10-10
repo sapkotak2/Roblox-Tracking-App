@@ -1,99 +1,105 @@
 """Asuna (Sword Art Online) - chibi redraw (see tools/chibi.py for the style guide).
-Long chestnut hair with a side braid, Knights of the Blood white uniform with red trim and cross, red skirt,
-white thigh-high boots, slim rapier thrust forward."""
+Matched to refs/redraw/asuna (SAO avatar full body + face), checklist in refs/redraw/asuna/NOTES.md:
+big round amber eyes, thin light brows, soft smile, rounder face; very long light chestnut hair with a side-swept
+fringe, long side locks and a side braid; KoB uniform: sleeveless white top with red-trimmed high collar, grey chest
+plate, red trim lines, detached white sleeves with red/gold bands, red pleated skirt with a white crossed tabard,
+long white coat tails behind, white thigh-highs with a red cross; slim fencer stance with the rapier thrust forward."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from chibi import Sprite
 
 PAL = dict(
-    o=(52, 20, 22),                                    # outline
-    h=(220, 114, 48), H=(144, 60, 30), l=(255, 182, 116),  # hair base / shade / shine
-    s=(252, 216, 184), S=(228, 160, 128),              # skin
-    e=(255, 255, 255), k=(56, 26, 24), z=(176, 132, 46), m=(160, 56, 56),  # eye white, lash, hazel iris, mouth
-    w=(242, 242, 246), W=(176, 178, 198),              # white uniform / cool shade
-    r=(214, 32, 44), R=(132, 14, 28),                  # red trim / skirt
+    o=(56, 26, 24),                                    # outline
+    h=(228, 150, 92), H=(170, 92, 52),                 # light chestnut hair / shade (also the thin brows)
+    s=(255, 222, 198), S=(236, 168, 140),              # skin
+    e=(255, 255, 255), k=(70, 32, 26), z=(196, 112, 44), m=(220, 110, 110),  # eye white, lash, amber iris, smile
+    w=(246, 246, 250), W=(178, 180, 202),              # white uniform / cool grey (shade + chest plate)
+    r=(214, 36, 46), R=(140, 18, 30),                  # red trim / skirt
+    g=(236, 184, 60),                                  # gold band on the sleeves
 )
 sp = Sprite('asuna', W=50, H=52, palette=PAL)
 L = sp.layer
 
-# ---------------- long hair down the back ----------------
+# ---------------- very long hair down the back (to the thighs) ----------------
 back_hair = L()
-back_hair.poly('h', [(12, 5), (18, 12), (18, 24), (16, 33), (12, 38), (7, 37), (6, 30), (6, 18), (8, 10)])
-back_hair.poly('H', [(7, 18), (9, 18), (9, 36), (8, 36), (7, 32)])
-back_hair.v('H', 14, 22, 34).v('H', 12, 26, 33)
+back_hair.poly('h', [(13, 5), (18, 12), (18, 30), (16, 40), (12, 43), (9, 41), (8, 32), (8, 16), (10, 9)])
+back_hair.poly('H', [(8, 18), (10, 18), (10, 41), (9, 41), (8, 32)])
+back_hair.v('H', 14, 26, 41)
+back_hair.poly('h', [(27, 10), (33, 9), (34, 20), (32, 27), (29, 27), (29, 20)]).v('H', 31, 20, 26)   # long lock on the near side
 
-# ---------------- back arm (hanging behind, white sleeve, red cuff) ----------------
+# ---------------- long white coat tails behind the legs (red trim) ----------------
+tails = L()
+tails.poly('w', [(13, 30), (19, 30), (18, 45), (10, 45)]).v('W', 12, 33, 44).v('W', 13, 31, 44).h('r', 11, 18, 44)
+
+# ---------------- back arm: bare shoulder, detached sleeve, hand on the hip ----------------
 back_arm = L()
-back_arm.poly('w', [(12, 23), (17, 23), (17, 31), (12, 31)]).v('W', 13, 24, 31).v('W', 14, 24, 31)
-back_arm.h('r', 12, 17, 31).h('R', 12, 17, 32)
-back_arm.rect('s', 12, 32, 16, 35)
-back_arm.px('S', (13, 34), (14, 34))
+back_arm.rect('s', 13, 21, 17, 24).v('S', 13, 22, 24)
+back_arm.rect('w', 12, 24, 16, 32).v('W', 12, 24, 32).v('W', 13, 24, 32)
+back_arm.rect('s', 12, 32, 16, 35).h('S', 12, 16, 34)
 
-# ---------------- legs: white thigh-high boots with red tops ----------------
+# ---------------- legs: white thigh-highs with a red cross, white boots, fencer stance ----------------
 leg_b = L()
-leg_b.poly('s', [(16, 36), (22, 36), (21, 39), (16, 39)])
-leg_b.poly('w', [(15, 39), (21, 39), (19, 47), (15, 47)]).h('r', 15, 21, 39).h('r', 15, 21, 40)
+leg_b.poly('s', [(16, 36), (21, 36), (20, 39), (16, 39)])
+leg_b.poly('w', [(15, 39), (21, 39), (19, 47), (15, 47)]).h('r', 15, 21, 39)
 leg_b.poly('w', [(11, 47), (19, 47), (19, 50), (11, 50)])
-leg_b.v('W', 16, 41, 47).v('W', 17, 41, 47).h('W', 12, 18, 49).h('r', 12, 18, 50)
+leg_b.v('W', 16, 40, 47).v('W', 17, 40, 47).h('W', 12, 18, 50)
 leg_f = L()
 leg_f.poly('s', [(23, 36), (28, 36), (29, 39), (24, 39)])
-leg_f.poly('w', [(24, 39), (29, 39), (30, 47), (26, 47)]).h('r', 24, 29, 39).h('r', 24, 29, 40)
+leg_f.poly('w', [(24, 39), (30, 39), (31, 47), (26, 47)]).h('r', 24, 30, 39)
+leg_f.v('r', 28, 41, 44).h('r', 27, 29, 42)                                          # red cross on the thigh-high
 leg_f.poly('w', [(26, 47), (34, 47), (35, 50), (26, 50)])
-leg_f.v('W', 25, 41, 47).v('W', 26, 43, 47).h('W', 27, 34, 49).h('r', 27, 34, 50)
+leg_f.poly('W', [(24, 40), (25, 40), (27, 47), (26, 47)]).h('W', 27, 34, 50)
 
-# ---------------- skirt: red with a white hem ----------------
+# ---------------- red pleated skirt with the white crossed tabard ----------------
 skirt = L()
-skirt.poly('r', [(17, 30), (28, 30), (32, 37), (13, 37)])
-skirt.poly('R', [(17, 30), (19, 30), (17, 37), (13, 37)])
-skirt.v('R', 22, 33, 36).v('R', 27, 33, 36)
-skirt.h('w', 14, 31, 36)
+skirt.poly('r', [(18, 29), (28, 29), (31, 37), (14, 37)])
+skirt.poly('R', [(18, 29), (20, 29), (18, 37), (14, 37)])
+skirt.v('R', 21, 33, 37).v('R', 29, 33, 37)
+tabard = L().poly('w', [(22, 29), (27, 29), (27, 36), (24, 38), (22, 36)]).v('r', 24, 31, 35).h('r', 23, 25, 32)
 
-# ---------------- torso: white top, red collar, red cross ----------------
+# ---------------- torso: slim, bare shoulders, white top, red-trimmed high collar, grey chest plate ----------------
 torso = L()
-torso.rect('s', 20, 17, 24, 22).v('S', 20, 17, 22).v('S', 21, 19, 22)              # neck
-torso.poly('w', [(17, 21), (28, 21), (29, 25), (27, 31), (18, 31), (17, 25)])
-torso.poly('W', [(17, 21), (20, 21), (20, 31), (18, 31), (17, 25)])                 # back side shade
-torso.h('r', 18, 27, 21).h('r', 21, 24, 22)                                         # red collar
-torso.v('r', 23, 24, 28).h('r', 22, 24, 25)                                         # red cross
-torso.h('R', 18, 27, 30)                                                            # belt
+torso.rect('s', 20, 17, 24, 21).v('S', 20, 17, 21)                                    # neck
+torso.poly('w', [(18, 21), (27, 21), (28, 24), (27, 29), (19, 29), (18, 24)])
+torso.v('W', 18, 21, 29).v('W', 19, 22, 29)
+torso.v('r', 21, 25, 28).v('r', 26, 25, 28)                                          # red trim lines down the front
+torso.h('W', 19, 27, 29)                                                             # white belt (grey shade line)
+torso.rect('w', 20, 18, 24, 21).h('r', 20, 24, 18).px('r', (22, 20))                 # high collar, red trim + clasp
+torso.h('W', 20, 27, 23).h('W', 20, 27, 24)                                         # grey chest plate
 
 # ---------------- head ----------------
 head = L()
 head.ell('h', 10, 0, 33, 18)
-head.poly('s', [(16, 7), (30, 7), (31, 11), (31, 13), (29, 16), (25, 19), (21, 19), (18, 16), (16, 12)])  # face
-# side-swept bangs, cut above the eyes, one lock at the front of the face
-for pts in ([(14, 2), (22, 2), (19, 9), (17, 10)], [(19, 2), (28, 3), (24, 8), (21, 7)],
-            [(25, 2), (32, 3), (33, 10), (31, 15), (30, 9), (27, 7)]):
-    head.poly('h', pts)
-head.poly('h', [(11, 5), (18, 8), (18, 22), (15, 24), (12, 18)])                  # side lock over the ear
-head.v('H', 16, 9, 11)
-head.px('H', (21, 3), (21, 4), (20, 5), (20, 6), (26, 3), (25, 4), (25, 5), (24, 6), (30, 5), (31, 6), (31, 7))
-# braided side lock: slanted segment lines down the lock beside the face
-for y in (12, 15, 18, 21):
-    head.px('H', (13, y + 1), (14, y), (15, y), (16, y - 1))
-head.px('l', (22, 1), (23, 1), (28, 2), (29, 2))
-# brows, eyes, nose, mouth
-head.h('k', 20, 21, 9).h('k', 25, 28, 9)
-head.h('k', 19, 22, 11).px('e', (20, 12), (20, 13), (20, 14)).px('z', (21, 12), (21, 13), (21, 14))
-head.h('k', 24, 28, 11).px('k', (29, 10))
-head.px('e', (24, 12), (24, 13), (24, 14), (27, 12), (27, 13), (27, 14))
-head.px('z', (25, 12), (25, 13), (26, 13), (25, 14), (26, 14)).px('k', (26, 12))
+head.poly('s', [(16, 7), (30, 7), (31, 11), (31, 14), (29, 17), (26, 19), (21, 19), (18, 17), (16, 13)])  # rounder face
+# side-swept fringe parted on the far side, sweeping toward the front; long side locks
+head.poly('h', [(13, 2), (20, 2), (19, 7), (17, 9)])
+head.poly('h', [(18, 2), (31, 3), (30, 6), (25, 7), (21, 8)])
+head.poly('h', [(28, 3), (33, 6), (33, 12), (32, 16), (30, 9)])
+head.poly('h', [(11, 6), (18, 8), (18, 24), (17, 30), (15, 30), (13, 22), (12, 15)])   # long lock in front of the far shoulder
+head.v('H', 16, 11, 28).px('H', (20, 4), (21, 5), (22, 6), (27, 4), (28, 5))
+# braid running from the temple back along the side of the head
+head.px('h', (20, 7)).h('H', 11, 18, 6).h('H', 11, 18, 8).px('H', (12, 7), (14, 7), (16, 7), (18, 7))   # side braid: rope band above the ear
+# thin light brows, big round amber eyes (3 rows), soft smile
+head.h('H', 19, 21, 8).h('H', 25, 27, 8)
+head.h('k', 19, 22, 10).px('e', (20, 11), (20, 12), (20, 13)).px('z', (21, 11), (21, 12), (21, 13))
+head.h('k', 24, 28, 10)
+head.px('e', (24, 11), (24, 12), (24, 13), (27, 11), (27, 12), (27, 13))
+head.px('k', (25, 11), (26, 11)).px('z', (25, 12), (26, 12), (25, 13), (26, 13))
 head.px('S', (30, 14))
-head.h('m', 26, 27, 16)
+head.px('m', (25, 16), (26, 16))
 head.px('S', (21, 17), (22, 18))
 
-# ---------------- rapier (thin, thrust forward) ----------------
-rapier = L()
-rapier.poly('W', [(37, 22), (48, 22), (49, 23), (48, 24), (37, 24)])
-rapier.h('e', 38, 47, 23)
+# ---------------- rapier thrust forward at chest height ----------------
+rapier = L().poly('W', [(37, 24), (48, 24), (49, 25), (48, 26), (37, 26)]).h('e', 38, 47, 25)
 
-# ---------------- front arm: straight out at shoulder height ----------------
+# ---------------- front arm: bare shoulder, detached sleeve with red/gold band, straight out ----------------
 front = L()
-front.poly('w', [(25, 21), (32, 21), (33, 26), (26, 27), (25, 25)]).h('W', 26, 32, 26).h('W', 26, 32, 25)
-front.rect('r', 32, 21, 34, 26)                                                    # red cuff
-fist = L().rect('s', 34, 21, 38, 26).h('S', 34, 38, 25).h('S', 34, 38, 26)
-guard = L().rect('W', 37, 20, 39, 27).v('e', 38, 21, 26)                           # cup guard
+front.poly('s', [(25, 21), (28, 21), (29, 28), (25, 27)]).v('S', 25, 22, 26)
+front.poly('w', [(28, 23), (34, 23), (34, 28), (28, 28)]).h('W', 28, 34, 27).h('W', 28, 34, 28)
+front.v('r', 28, 23, 28).v('g', 29, 23, 28)
+fist = L().rect('s', 34, 23, 38, 28).h('S', 34, 38, 27).h('S', 34, 38, 28)
+guard = L().rect('W', 37, 22, 39, 29).v('e', 38, 23, 28)
 
-for lay in (back_hair, back_arm, leg_b, leg_f, skirt, torso, head, rapier, front, fist, guard):
+for lay in (back_hair, tails, back_arm, leg_b, leg_f, skirt, tabard, torso, head, rapier, front, fist, guard):
     sp.add(lay)
 sp.save()

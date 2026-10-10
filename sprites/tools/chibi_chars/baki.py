@@ -1,5 +1,5 @@
 """Baki Hanma (Baki) - reference redraw for the chibi framework (see tools/chibi.py for the style guide).
-Shirtless and very muscular (V-taper), big auburn hair, maroon shorts with a white waistband, white wrist and ankle
+Shirtless and very muscular (V-taper), shaggy dark reddish-brown hair, scowling red-brown eyes, gritted teeth, maroon shorts with a white waistband, white wrist and ankle
 wraps, bare feet, fists-up fighting stance facing right."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
@@ -7,9 +7,9 @@ from chibi import Sprite
 
 PAL = dict(
     o=(44, 14, 10),                                    # outline
-    h=(156, 44, 26), H=(98, 22, 14),                   # hair base / strand lines
+    h=(100, 46, 36), H=(62, 26, 20),                   # dark reddish-brown hair / strand lines
     s=(230, 160, 110), S=(182, 104, 64),               # skin / shade
-    e=(252, 248, 240), k=(46, 22, 14), m=(126, 40, 32),  # eye white, iris, mouth
+    e=(252, 248, 240), k=(190, 52, 40), m=(110, 34, 28),  # eye white, red-brown iris, mouth
     r=(152, 24, 36), R=(98, 12, 22),                   # maroon shorts / shade
     w=(244, 244, 236), W=(176, 184, 176),              # wraps + waistband / shade
 )
@@ -59,25 +59,26 @@ torso.rect('s', 16, 16, 23, 20).v('S', 16, 16, 19)                            # 
 # ---------------- head ----------------
 head = sp.layer()
 head.ell('h', 6, 1, 32, 20)
-for pts in ([(8, 7), (2, 3), (13, 3)], [(13, 3), (15, -1), (21, 2)], [(21, 2), (27, -1), (28, 4)],
-            [(28, 4), (35, 4), (31, 9)], [(7, 11), (3, 13), (8, 17)]):
-    head.poly('h', pts)                                                       # a few big, blunt spikes
-head.poly('s', [(15, 8), (29, 7), (31, 11), (31, 16), (27, 20), (20, 21), (16, 18), (14, 13)])  # face
-for pts in ([(14, 6), (20, 6), (17, 10)], [(19, 6), (25, 6), (22, 10)], [(24, 6), (31, 6), (29, 10)],
-            [(12, 6), (16, 6), (15, 12)]):
-    head.poly('h', pts)                                                       # short fringe spikes + sideburn
+for pts in ([(8, 8), (3, 7), (11, 3)], [(13, 2), (16, -1), (20, 1)], [(22, 1), (27, 0), (28, 4)],
+            [(28, 4), (34, 6), (31, 9)], [(7, 11), (3, 14), (8, 17)], [(8, 16), (6, 21), (12, 19)]):
+    head.poly('h', pts)                                                       # shaggy, voluminous, messy tips
+head.poly('s', [(15, 8), (29, 7), (31, 11), (31, 17), (29, 20), (19, 21), (16, 18), (14, 13)])  # square jaw
+for pts in ([(13, 6), (20, 6), (18, 11)], [(19, 6), (25, 6), (22, 11)], [(24, 6), (31, 6), (29, 10)],
+            [(29, 6), (33, 8), (31, 11)], [(12, 6), (16, 6), (16, 14)]):
+    head.poly('h', pts)                                                       # clumps of bangs over the forehead
 seg(head, 'H', (8, 5), (12, 9)); seg(head, 'H', (20, 2), (18, 6)); seg(head, 'H', (6, 13), (10, 16))
-seg(head, 'H', (27, 2), (26, 5))
-head.rect('s', 16, 12, 17, 14).px('S', (16, 13), (16, 14))                    # ear
-head.h('S', 17, 30, 10)                                                       # shade under the fringe
-# fierce brows angled down to the nose; 3-row eyes with whites
-head.px('o', (18, 10), (19, 10), (20, 11), (21, 11), (24, 11), (25, 11), (26, 10), (27, 10), (28, 10))
-head.h('o', 19, 21, 12).px('e', (19, 13), (19, 14)).px('k', (20, 13), (21, 13), (20, 14), (21, 14))
-head.h('o', 24, 28, 12).px('e', (24, 13), (25, 13), (28, 13), (24, 14), (25, 14), (28, 14))
-head.px('k', (26, 13), (27, 13), (26, 14), (27, 14))
-head.px('S', (31, 15), (31, 16))                                              # nose
-head.h('m', 25, 28, 18)                                                       # small determined mouth
-head.v('S', 17, 16, 18).h('S', 18, 20, 19)                                    # jaw shade (back side)
+seg(head, 'H', (27, 2), (26, 5)); seg(head, 'H', (21, 7), (22, 10))
+head.rect('s', 16, 13, 17, 15).px('S', (16, 14), (16, 15))                    # ear
+head.h('S', 17, 30, 10)                                                       # shadow under the bangs
+# thick scowling brows angled down to the nose; glaring eyes with red-brown irises, small whites
+head.px('o', (18, 10), (19, 10), (20, 10), (20, 11), (21, 11), (24, 11), (25, 11), (25, 10), (26, 10), (27, 10), (28, 10))
+head.h('o', 19, 21, 12).px('e', (19, 13)).px('k', (20, 13), (21, 13), (20, 14), (21, 14)).px('S', (19, 14))
+head.h('o', 24, 28, 12).px('e', (24, 13), (28, 13)).px('k', (25, 13), (26, 13), (27, 13), (26, 14), (27, 14))
+head.px('S', (24, 14), (25, 14), (28, 14))
+head.px('S', (31, 15), (31, 16), (30, 17))                                    # nose
+head.px('m', (24, 18), (27, 18)).px('e', (25, 18), (26, 18))                  # gritted teeth
+head.px('S', (29, 15), (28, 16))                                              # small cheek scar
+head.v('S', 17, 16, 18).h('S', 18, 21, 19)                                    # jaw shade (back side)
 
 # ---------------- back arm, forearm rising across the body + fist guarding the chin ----------------
 back_fore = sp.layer()

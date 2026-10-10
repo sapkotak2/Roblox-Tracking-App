@@ -1,19 +1,21 @@
-"""Yuta Okkotsu (Jujutsu Kaisen) - chibi redraw (see tools/chibi.py for the style guide).
-Messy near-black hair, tired eyes with dark circles, WHITE Jujutsu High uniform (long high-collared jacket, white
-trousers), katana held in front."""
+"""Yuta Okkotsu (Jujutsu Kaisen 0) - chibi redraw (see tools/chibi.py for the style guide; checklist in
+refs/redraw/okkotsu/NOTES.md, built from the JJK0 character sheet).
+Smooth dark teal-black parted hair with locks over the forehead, big round empty eyes with heavy dark circles,
+white hip-length Jujutsu High jacket (tall collar, gold buttons, off-centre closure), BLACK slim trousers, white
+sneakers, sword bag slung on the back with a strap across the chest, katana drawn in the front hand."""
 import os, sys
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 from chibi import Sprite
 
 PAL = dict(
-    o=(26, 24, 38),                                    # outline
-    h=(50, 48, 64), H=(24, 22, 34), j=(112, 116, 146),  # hair base / strands / shine
-    s=(246, 214, 186), S=(208, 164, 140),              # skin / shade
-    e=(250, 250, 255), k=(52, 50, 84), u=(170, 128, 140), m=(160, 96, 90),  # eye white, iris, dark circles, mouth
-    w=(242, 244, 250), W=(176, 184, 206),              # white uniform / shade
-    b=(40, 40, 54), B=(84, 86, 106),                   # shoes + buttons / shoe shine
-    g=(214, 222, 236), G=(138, 146, 166),              # katana blade / blade shade
-    t=(198, 160, 70),                                  # guard
+    o=(20, 24, 32),                                    # outline
+    h=(36, 54, 62), H=(16, 26, 32),                    # hair (dark teal-black) / strands
+    s=(248, 220, 194), S=(210, 170, 148), m=(170, 108, 100),  # skin / shade / mouth
+    e=(252, 252, 255), k=(26, 30, 40), u=(150, 118, 132),     # eye white / pupil / dark circles
+    w=(244, 246, 252), W=(180, 190, 210), g=(222, 178, 64),  # white jacket + sneakers / shade / gold buttons
+    b=(46, 46, 56), B=(24, 24, 32),                    # black trousers / shade (+ sword bag shade)
+    c=(40, 46, 76), G=(128, 134, 152),                 # sword bag (navy) / strap + blade shade
+    t=(220, 228, 240),                                 # katana blade
 )
 sp = Sprite('okkotsu', W=46, H=52, palette=PAL)
 
@@ -26,83 +28,80 @@ def seg(L, k, p0, p1):
     return L
 
 
-# ---------------- jacket tail behind the legs ----------------
-tail = sp.layer()
-tail.poly('w', [(12, 30), (20, 30), (19, 38), (14, 42), (7, 43), (9, 36)])
-tail.poly('W', [(7, 43), (9, 36), (12, 31), (14, 33), (12, 42)])
-seg(tail, 'W', (16, 34), (16, 41))
+# ---------------- sword bag on the back: top sticks out above the back shoulder ----------------
+bag = sp.layer()
+bag.poly('c', [(3, 21), (9, 18), (17, 34), (11, 37)])
+seg(bag, 'B', (5, 22), (12, 36)); seg(bag, 'B', (5, 23), (12, 35))
+bag.poly('B', [(3, 21), (9, 18), (10, 21), (5, 24)])                                # tied end of the bag
 
-# ---------------- back arm (sleeve + hand, behind the body) ----------------
+# ---------------- back arm (sleeve + hand) ----------------
 back_arm = sp.layer()
-back_arm.poly('W', [(10, 21), (15, 21), (14, 30), (10, 31), (8, 26)])
-back_arm.ell('s', 7, 29, 12, 34).px('S', (8, 33), (9, 33), (10, 33))
+back_arm.poly('W', [(10, 21), (15, 21), (15, 29), (10, 30), (8, 26)])
+back_arm.ell('s', 8, 28, 13, 33).h('S', 9, 12, 32)
 
-# ---------------- legs (white trousers, dark shoes) ----------------
+# ---------------- legs: black slim trousers, white sneakers ----------------
 leg_b = sp.layer()
-leg_b.poly('w', [(14, 33), (20, 33), (17, 40), (14, 46), (8, 46), (11, 40)])
-seg(leg_b, 'W', (14, 34), (10, 45)); seg(leg_b, 'W', (15, 34), (11, 41))
-leg_b.poly('b', [(7, 45), (15, 45), (15, 50), (4, 50), (4, 47)]).h('B', 9, 13, 46)
+leg_b.poly('b', [(14, 33), (20, 33), (17, 40), (14, 46), (9, 46), (11, 40)])
+seg(leg_b, 'B', (14, 34), (10, 45)); seg(leg_b, 'B', (15, 34), (12, 40))
+leg_b.poly('w', [(8, 45), (15, 45), (15, 50), (4, 50), (5, 47)]).h('W', 4, 15, 50).h('W', 9, 14, 46)
 leg_f = sp.layer()
-leg_f.poly('w', [(21, 33), (27, 33), (30, 40), (31, 46), (25, 46), (24, 40)])
-seg(leg_f, 'W', (22, 34), (24, 39)); leg_f.v('W', 25, 40, 45)
-leg_f.poly('b', [(24, 45), (32, 45), (33, 47), (36, 48), (36, 50), (24, 50)]).h('B', 26, 31, 46)
+leg_f.poly('b', [(21, 33), (27, 33), (29, 40), (30, 46), (25, 46), (24, 40)])
+seg(leg_f, 'B', (22, 34), (24, 39)); leg_f.v('B', 25, 40, 45)
+leg_f.poly('w', [(24, 45), (31, 45), (33, 47), (35, 48), (35, 50), (24, 50)]).h('W', 24, 35, 50).h('W', 26, 30, 46)
 
-# ---------------- torso: closed white jacket, dark buttons on the front edge ----------------
+# ---------------- torso: white hip-length jacket, off-centre closure, strap across the chest ----------------
 torso = sp.layer()
-torso.poly('w', [(12, 21), (27, 21), (26, 27), (26, 35), (14, 35), (13, 27)])
-torso.poly('W', [(12, 21), (15, 21), (16, 35), (14, 35), (13, 27)])            # back side in shade
-torso.v('W', 23, 22, 35)                                                         # front edge of the jacket
-torso.px('b', (24, 24), (24, 28), (24, 32))                                      # buttons
-skirt = sp.layer()  # front flap of the long jacket over the front thigh
-skirt.poly('w', [(22, 33), (27, 33), (30, 40), (25, 41), (23, 38)])
-seg(skirt, 'W', (24, 34), (26, 40))
+torso.poly('w', [(12, 21), (27, 21), (27, 28), (27, 35), (13, 35), (12, 28)])
+torso.poly('W', [(12, 21), (15, 21), (15, 35), (13, 35), (12, 28)])                 # back side in shade
+torso.h('W', 14, 26, 34)                                                            # hem
+seg(torso, 'W', (22, 22), (24, 33))                                                 # diagonal closure
+torso.px('g', (24, 26))                                                             # gold button
+seg(torso, 'G', (14, 22), (26, 31)); seg(torso, 'G', (14, 23), (26, 32))            # sword-bag strap
+torso.px('w', (20, 35), (21, 35))
 
 # ---------------- head ----------------
 head = sp.layer()
-head.rect('S', 18, 18, 22, 22)                                                   # neck
-head.ell('h', 8, 1, 31, 19)
-head.ell('h', 11, 0, 28, 10)                                                     # rounder, softer top
-for pts in ([(10, 4), (8, 2), (13, 2)], [(23, 1), (27, 1), (27, 4)],
-            [(9, 7), (6, 8), (9, 11)], [(8, 11), (5, 14), (9, 15)], [(9, 15), (8, 19), (13, 18)]):
-    head.poly('h', pts)                                                          # droopy, messy outline
-head.poly('s', [(15, 8), (29, 7), (31, 11), (31, 16), (27, 20), (20, 21), (16, 18), (14, 13)])  # face
-for pts in ([(14, 6), (20, 6), (18, 11)], [(19, 6), (24, 6), (22, 11)], [(23, 6), (29, 6), (27, 10)],
-            [(27, 6), (32, 7), (31, 11)], [(12, 6), (16, 6), (15, 13)]):
-    head.poly('h', pts)                                                          # fringe falling down + sideburn
-seg(head, 'H', (11, 4), (13, 9)); seg(head, 'H', (18, 2), (18, 7)); seg(head, 'H', (10, 12), (12, 17))
-seg(head, 'H', (24, 3), (23, 7)); seg(head, 'H', (7, 9), (9, 12))
-head.px('j', (15, 4), (16, 3), (21, 3))
-head.rect('s', 16, 12, 17, 14).px('S', (16, 13), (16, 14))                       # ear
-head.h('S', 17, 30, 11)                                                          # shade under the fringe
-# soft, slightly sad brows; round tired eyes with dark circles under them
-head.px('o', (19, 11), (20, 11), (25, 11), (26, 11), (27, 11))
-head.h('o', 19, 21, 12).px('e', (19, 13)).px('k', (20, 13), (21, 13))
-head.h('o', 24, 28, 12).px('e', (24, 13), (25, 13), (28, 13)).px('k', (26, 13), (27, 13)).px('e', (28, 13))
-head.px('k', (26, 14), (27, 14)).px('e', (24, 14), (25, 14), (28, 14)).px('k', (20, 14), (21, 14)).px('e', (19, 14))
-head.h('u', 19, 21, 15).h('u', 24, 28, 15)                                       # dark circles
-head.px('S', (31, 15), (31, 16))                                                 # nose
-head.h('m', 26, 27, 18)                                                          # small mouth
-head.v('S', 17, 16, 18).h('S', 18, 20, 19)                                       # jaw shade (back side)
+head.rect('s', 18, 17, 22, 21).v('S', 18, 17, 20)                                   # neck
+head.ell('h', 9, 1, 30, 18)                                                         # smooth, rounded hair
+head.poly('h', [(9, 8), (15, 8), (15, 17), (11, 18), (9, 15)])
+head.poly('s', [(15, 8), (29, 7), (31, 11), (31, 16), (27, 20), (21, 21), (17, 18), (15, 13)])  # soft oval face
+for pts in ([(14, 5), (21, 5), (19, 9)], [(19, 5), (24, 5), (22, 10)], [(23, 5), (31, 6), (29, 9)],
+            [(28, 5), (32, 7), (31, 9)], [(12, 6), (16, 6), (16, 12)]):
+    head.poly('h', pts)                                                             # locks hanging down over the forehead
+head.poly('h', [(16, 1), (19, -1), (22, 1)])
+seg(head, 'H', (17, 1), (16, 5)); seg(head, 'H', (21, 5), (22, 9)); seg(head, 'H', (11, 9), (12, 15))
+seg(head, 'H', (26, 4), (27, 7))
+head.rect('s', 15, 12, 16, 14).px('S', (15, 13))                                    # ear tip under the hair
+head.h('S', 17, 30, 10)                                                             # shade under the fringe
+# thin brows; big round eyes: lid line, 2 rows of white round a small pupil, heavy dark circles below
+head.px('o', (19, 10), (20, 10), (25, 10), (26, 10), (27, 10))
+head.h('o', 20, 21, 12).h('o', 25, 27, 12).px('o', (19, 13), (24, 13), (28, 13))   # rounded upper lids
+head.px('e', (21, 13), (19, 14), (21, 14)).px('k', (20, 13), (20, 14))
+head.px('e', (25, 13), (27, 13), (24, 14), (25, 14), (27, 14), (28, 14)).px('k', (26, 13), (26, 14))
+head.h('u', 19, 21, 15).h('u', 25, 28, 15)                                          # dark circles
+head.px('S', (31, 15), (31, 16))                                                    # nose
+head.h('m', 25, 26, 17)                                                             # small flat mouth
+head.v('S', 17, 16, 18).h('S', 18, 20, 19)                                          # jaw shade
 
-# ---------------- high collar ----------------
+# ---------------- tall stiff collar with a gold button ----------------
 collar = sp.layer()
-collar.poly('w', [(15, 17), (18, 19), (22, 20), (26, 18), (27, 22), (22, 24), (15, 23)])
+collar.poly('w', [(15, 17), (18, 19), (22, 20), (26, 18), (27, 23), (22, 24), (15, 23)])
 collar.poly('W', [(15, 17), (18, 19), (18, 23), (15, 23)])
-collar.px('b', (24, 21))
+collar.px('g', (25, 20))
 
-# ---------------- katana (held in front, blade angled forward-up) ----------------
+# ---------------- katana (drawn, held in front, blade forward-up) ----------------
 katana = sp.layer()
-katana.poly('g', [(30, 27), (41, 15), (44, 13), (43, 17), (33, 30)])
-seg(katana, 'G', (33, 28), (42, 17)); seg(katana, 'G', (32, 28), (41, 17))
-katana.poly('b', [(26, 32), (30, 28), (32, 30), (28, 34)])                       # black grip
-katana.poly('t', [(29, 26), (31, 25), (34, 29), (33, 31)])                       # guard
+katana.poly('t', [(30, 27), (41, 15), (44, 13), (43, 17), (33, 30)])
+seg(katana, 'G', (33, 28), (42, 17))
+katana.poly('b', [(26, 32), (30, 28), (32, 30), (28, 34)])                          # dark grip
+katana.poly('g', [(29, 26), (31, 25), (34, 29), (33, 31)])                          # small guard
 
-# ---------------- front arm: both hands on the grip in front of the body ----------------
+# ---------------- front arm: loose white sleeve, hand on the grip ----------------
 front = sp.layer()
 front.poly('w', [(24, 21), (29, 21), (31, 25), (30, 30), (26, 31), (26, 26)])
 seg(front, 'W', (25, 22), (27, 30))
-front.ell('s', 27, 27, 32, 32).px('S', (28, 31), (29, 31))
+front.ell('s', 27, 27, 32, 32).h('S', 28, 31, 31)
 
-for L in (tail, back_arm, leg_b, leg_f, torso, skirt, head, collar, katana, front):
+for L in (bag, back_arm, leg_b, leg_f, torso, head, collar, katana, front):
     sp.add(L)
 sp.save()
