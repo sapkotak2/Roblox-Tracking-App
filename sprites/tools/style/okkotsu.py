@@ -25,7 +25,7 @@ from PIL import Image, ImageDraw, ImageFont
 T = 'out/style/tanjiro_clean.png'
 OUT = 'out/style/okkotsu.png'
 PADL = 3            # extra columns on the left for the sword bag
-CHOSEN = 'tired-gentle'
+CHOSEN = 'deadpan'
 
 K = {
     '#': (26, 21, 33),                                    # template outline
@@ -39,7 +39,7 @@ K = {
     'd': (52, 30, 40),                                    # lash taper (Tanjiro's lash end colour, cooled)
     'b': (112, 92, 98),                                    # thin soft brow
     'r': (226, 186, 168),                                 # tired shade under the eye (soft, skin-toned)
-    'o': (204, 138, 126), 'O': (142, 80, 84),              # tiny mouth
+    'o': (204, 138, 126), 'O': (142, 80, 84), 'q': (196, 136, 124),              # tiny mouth
     # white jacket (cool shades)
     'W': (240, 242, 248), 'S': (200, 207, 224), 'U': (146, 155, 182),
     'Y': (226, 178, 72),                                  # gold button
@@ -84,20 +84,20 @@ HEAD = [  # x 0-27, rows 0-23. Eyes/brows/mouth come from FACES.
 # Face variants: list of (x, y, rows) patches over HEAD; '?' keeps HEAD. Built like Tanjiro's eyes:
 # brow row 13-14, lash row 15 (+ taper), eye rows 16-18 = 2-px white + 2x3 iris, shade row 19, mouth row 21.
 FACES = {
-    'tired-gentle': [   # big eye, heavy lid (top row shadowed), 1-px highlight, soft worried brows, tiny mouth
-        (11, 11, ['???b??', '?bb???', '??????', '?####?', '?ssPP?', '?wwIx?', '?wwII?', '??wJJ?', '??rr??']),
-        (19, 11, ['?b????', '??bb??', '??????', '?####?', '?ssPP?', '?wwIx?', '?wwII?', '??wJJ?', '??rr??']),
-        (18, 21, ['oO']),
+    'deadpan': [        # flat lowered lid over the top of the iris, level gaze, flat low brows, flat mouth
+        (11, 12, ['??????', '?bbb??', '?llll?', '?####?', '?ssPP?', '?wwIx?', '??wJJ?', '??????']),
+        (19, 12, ['??????', '?bbb??', '?llll?', '?####?', '?ssPP?', '?wwIx?', '??wJJ?', '??????']),
+        (18, 21, ['qO']),
     ],
-    'determined': [     # lids lower and level, brows lower with the inner end down, firm mouth
-        (11, 12, ['??????', '?bb???', '???bb?', '?####?', '?wwPP?', '?wwIx?', '??wJJ?', '??????']),
-        (19, 12, ['??????', '???bb?', '?bb???', '?####?', '?wwPP?', '?wwIx?', '??wJJ?', '??????']),
-        (17, 21, ['OOO']),
+    'side-glance': [    # same half-lid, iris pushed to the front edge of the eye (looking past you)
+        (11, 12, ['??????', '?bbb??', '?lllll', '?#####', '?sssPP', '?wwwIx', '??wwJJ', '??????']),
+        (19, 12, ['??????', '?bbb??', '?lllll', '?#####', '?sssPP', '?wwwIx', '??wwJJ', '??????']),
+        (18, 21, ['OO']),
     ],
-    'haunted': [        # wide blank stare: thin lash, small iris with white around it, deeper shade below
-        (11, 11, ['???b??', '?bb???', '??????', '?###??', '?wwPw?', '?wwIw?', '?wwJw?', '??ww??', '?rrrr?']),
-        (19, 11, ['?b????', '??bb??', '??????', '??###?', '?wPww?', '?wIww?', '?wJww?', '??ww??', '?rrrr?']),
-        (18, 21, ['O']),
+    'smug': [           # lids a row lower still, iris half hidden, tiny lopsided mouth (front corner up)
+        (11, 12, ['??????', '?bbb??', '??????', '?llll?', '?####?', '?wsPP?', '?wwIx?', '??????']),
+        (19, 12, ['??????', '?bbb??', '??????', '?llll?', '?####?', '?wsPP?', '?wwIx?', '??????']),
+        (17, 20, ['???q', 'qOO?']),
     ],
 }
 
