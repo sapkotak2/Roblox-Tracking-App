@@ -165,7 +165,7 @@ def find_tips(mask, centre, min_prom=18, window=12, arc=(180, 360)):
     return [t[:3] for t in tips], valleys
 
 
-def sharpen(spr, spr_box, mapping, tips, valleys, centre, tip_w=3, min_len=2.0):
+def sharpen(spr, spr_box, mapping, tips, valleys, centre, tip_w=3, min_len=2.0, ext=1.5):
     """re-cut the ref's spike tips and the notches between them into the downsampled mask (the vote rounds
     them off): each tip becomes a tapered spike ending in 1 px, each valley a V notch"""
     def tri_fill(m, a, b, c, value):
@@ -192,7 +192,7 @@ def sharpen(spr, spr_box, mapping, tips, valleys, centre, tip_w=3, min_len=2.0):
     for tx, ty, prom in tips:                             # then spikes
         x, y = mapping.fwd(tx, ty); d = np.array([x - cx, y - cy]); d /= np.linalg.norm(d)
         n = np.array([-d[1], d[0]]); L = max(min_len, prom * mapping.sx)
-        apex = np.array([x, y]) + d * 1.5                     # poke just past the rounded-off outline
+        apex = np.array([x, y]) + d * ext                     # poke past the rounded-off outline
         b = apex - d * (L + 1.5)
         tri_fill(out, tuple(apex), tuple(b + n * tip_w / 2), tuple(b - n * tip_w / 2), True)
     return out
