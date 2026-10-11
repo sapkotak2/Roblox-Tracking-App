@@ -42,7 +42,7 @@ K = {
     # eyes
     'w': (244, 240, 240), 's': (206, 200, 206),
     'P': (16, 70, 74), 'I': (34, 160, 150), 'J': (110, 214, 196), 'x': (250, 255, 255),
-    'b': (124, 134, 164),                                  # brow (silver-grey, reads as white brows)
+    'b': (98, 104, 140),                                  # brow (silver-grey, reads as white brows)
     'o': (196, 128, 118), 'O': (142, 80, 84),
     # black shihakusho
     'K': (46, 46, 60), 'L': (72, 74, 94), 'Z': (32, 31, 44),
@@ -61,33 +61,63 @@ K = {
 SKIN = [(248, 212, 173), (246, 210, 182), (226, 175, 140), (183, 124, 102)]
 
 # big swept spikes: (base point a, base point b, tip) in template coordinates (y may be negative)
-# One-directional mass: big spikes sweeping UP and BACK (to the upper left), longest at the crown and back.
-SPIKES = [
-    ((16, 2), (24, 6), (20, -7)),    # front of the crown, up
-    ((9, 1), (18, 2), (9, -8)),      # crown, tallest, up and back
-    ((3, 4), (11, 1), (-2, -6)),     # upper back
-    ((0, 6), (5, 3), (-7, -1)),      # back, rising
-    ((0, 7), (1, 13), (-8, 7)),      # back
-    ((0, 12), (2, 17), (-7, 15)),    # back, low
-    ((3, 15), (6, 19), (-1, 22)),    # side spike behind the ear, down and back
-    ((21, 4), (25, 9), (28, 2)),     # small front flick over the brow
+# Hair v4: many THIN flame-like spikes. Each spike = (root x, root y, angle in degrees (0 = right,
+# -90 = up), length, base width); the tip is 1 px. The mass sweeps up and slightly back like a flame, side
+# spikes flare out almost horizontally at temple/ear level, short tufts at the nape and behind the ear.
+import math
+FLAMES = [
+    # crown: tall tapered flames, up and leaning back toward the back of the head; wide roots, 1-px tips,
+    # so the notches between them stay open V shapes instead of black channels
+    (4, 4, -145, 8, 5), (8, 2, -125, 10, 5), (12, 1, -112, 10, 5), (16, 1, -102, 10, 5), (20, 3, -94, 8, 4),
+    (23, 6, -78, 5, 3),
+    # back, rising
+    (1, 9, -164, 7, 5),
+    # side flares (wings): back side at ear level, front side at the temple
+    (1, 15, 172, 5, 4), (2, 19, 150, 4, 3), (25, 9, -10, 3, 3),
+    # nape tuft
+    (5, 21, 115, 3, 3),
 ]
-CLUMPS = [((13, 4), (5, 9)), ((9, 9), (3, 14))]   # two soft clump lines in the dome
 
-# face skin rows (template coords): inclusive x ranges. Everything else in the head is hair: jagged locks over
-# the forehead, his long centre lock down between the eyes (x 16-17), a front lock framing the face (x 24).
-FACE = {11: [(13, 14), (20, 21)], 12: [(12, 15), (19, 22)], 13: [(11, 15), (18, 23)],
-        14: [(11, 15), (18, 23)], 15: [(11, 15), (18, 23)], 16: [(11, 16), (18, 23)], 17: [(11, 23)],
-        18: [(11, 23)], 19: [(11, 23)], 20: [(11, 23)], 21: [(11, 22)]}
+
+def _flame(x, y, ang, ln, wd):
+    d = (math.cos(math.radians(ang)), math.sin(math.radians(ang))); n = (-d[1], d[0])
+    a = (round(x + n[0] * wd / 2), round(y + n[1] * wd / 2)); b = (round(x - n[0] * wd / 2), round(y - n[1] * wd / 2))
+    return a, b, (round(x + d[0] * ln), round(y + d[1] * ln))
+
+
+SPIKES = [_flame(*f) for f in FLAMES]
+CLUMPS = [((13, 7), (10, 3)), ((17, 7), (17, 3)), ((9, 9), (5, 6)), ((6, 12), (2, 11)), ((21, 7), (21, 5))]
+
+# face skin rows: everything else in the head is hair. The signature lock falls from the parting over the
+# brow on the inner side of the near (front) eye, x 18-19, down to cheek level (tip at row 20, x 19); two
+# shorter jagged fringe points at x 11-12 and x 22-23; front lock framing the face at x 24.
+_LOCK = {9: (17, 19), 10: (17, 19), 11: (17, 19), 12: (17, 19), 13: (18, 19), 14: (18, 20), 15: (19, 20),
+         16: (19, 20), 17: (20, 20), 18: (20, 20)}          # curves toward the near eye, tip at (20, 19)
+_FRINGE = {11: [(11, 12), (22, 23)], 12: [(11, 11), (23, 23)]}
+FACE = {}
+for _y in range(11, 22):
+    _keep = set(range(11 if _y > 11 else 12, (23 if _y < 21 else 22) + 1))
+    if _y in _LOCK:
+        _keep -= set(range(_LOCK[_y][0], _LOCK[_y][1] + 1))
+    for _a, _b in _FRINGE.get(_y, []):
+        _keep -= set(range(_a, _b + 1))
+    _r, _run = [], None
+    for _x in sorted(_keep):
+        if _run and _x == _run[1] + 1:
+            _run[1] = _x
+        else:
+            if _run: _r.append(tuple(_run))
+            _run = [_x, _x]
+    _r.append(tuple(_run)); FACE[_y] = _r
 EAR = {18: [(7, 9)], 19: [(6, 9)], 20: [(6, 9)], 21: [(7, 9)]}
 
 # face options: (x, y, rows) in template coords; '?' keeps. Eyes built like Tanjiro's: brow row 14,
 # lash row 15, eye rows 16-18 (2-px white + 2x3 teal iris), mouth row 21.
 FACES = {
-    'cool-serious': [   # level lash, short flat brows with the outer end up (inner end pulled down), flat mouth
-        (11, 13, ['?b????', '??bbb?', '?####?', '?wwPP?', '?wwIx?', '??wJJ?']),
-        (19, 13, ['????b?', '?bbb??', '?####?', '?wwPP?', '?wwIx?', '?wwJJ?']),
-        (18, 21, ['oO']),
+    'cool-serious': [   # big turquoise eyes, sharp lids slanting down to the nose, thick brows scowling inward
+        (11, 12, ['?bb???', '??bbbb', '?####?', '?wPP#?', '?wIx??', '?wJJ??']),
+        (19, 12, ['???bb?', '?bbb??', '?####?', '?#PPw?', '?wIxw?', '?wJJw?']),
+        (17, 21, ['?oO']),
     ],
     'irritated': [      # brows in a firm V, lid lowered over the iris, short hard mouth
         (11, 13, ['?bb???', '???bb?', '?####?', '?ssPP?', '?wwIx?', '??wJJ?']),
@@ -145,7 +175,7 @@ STAR = (24, 26, [   # four-point star tsuba at the base of the blade
 
 # v3 pose: small and composed, upright with arms crossed (near forearm on top, hands tucked), Hyorinmaru
 # sheathed on his back: hilt + gold star guard over the shoulder, sash across the chest holding it.
-# Shorter legs than Tanjiro (he is small): feet end at row 53. Absolute template rows, (x, 'pixels') segments.
+# Straight legs, feet slightly apart, hakama falling straight (no bent knees); feet end at row 52. Absolute template rows, (x, 'pixels') segments.
 COMPOSED = {
     22: [(6, '#HHh')],
     23: [(6, '#HHhKKK'), (19, 'wKK#')],
@@ -164,21 +194,20 @@ COMPOSED = {
     36: [(4, '#HHh##Z#KKKKKqG#L#')],
     37: [(4, '#HHh#hHHHHHHHHHHhh#')],
     38: [(4, '#HHh#hhhhhhhhhhhhh#')],
-    39: [(4, '#HHHh#ZKKKKLZKKKKKL#')],
-    40: [(3, '#HHHHh#ZKKKKL#ZKKKKL#')],
-    41: [(3, '#HHhHh#ZKKKKL#ZKKKKKL#')],
-    42: [(3, '#HHHhHh#ZKKKL#ZKKKKKL#')],
-    43: [(2, '#HHhHhHh#ZKKKL#ZKKKKKKL#')],
-    44: [(2, '#HHHhHHh#ZKKKKL#ZKKKKKL#')],
-    45: [(2, '#jHHhHHhh#ZKKKL#ZKKKKKL#')],
-    46: [(2, '#jjhhhhhjj#ZKKL#ZKKKKL#')],
-    47: [(2, '##########ZKKKL#ZKKKKL#')],
-    48: [(11, '#ZKKL#ZKKKKL#')],
-    49: [(10, '#ZKKKL#ZKKKKL#')],
-    50: [(10, '#HHh#'), (17, '#HHHh#')],
-    51: [(9, '#HHHHh#'), (17, '#HHHHHh#')],
-    52: [(8, '#RRRRRRr#'), (16, '#RRRRRRRr#')],
-    53: [(8, '#' * 9), (16, '#' * 10)],
+    39: [(4, '#HHHh#ZKKKKLZKKKKL#')],                        # straight legs, hakama falling straight
+    40: [(4, '#HHHh#ZKKKKLZKKKKL#')],
+    41: [(4, '#HHhH#ZKKKKL#ZKKKL#')],
+    42: [(4, '#HHhH#ZKKKKL#ZKKKL#')],
+    43: [(4, '#HhHH#ZKKKKL#ZKKKL#')],
+    44: [(4, '#HhHH#ZKKKKL#ZKKKL#')],
+    45: [(4, '#HHhH#ZKKKKL#ZKKKL#')],
+    46: [(4, '#jhhj#ZKKKKL#ZKKKL#')],
+    47: [(4, '######ZKKKKL#ZKKKL#')],
+    48: [(9, '#ZKKKKL#ZKKKL#')],
+    49: [(10, '#HHh#'), (16, '#HHh#')],
+    50: [(9, '#HHHHh#'), (16, '#HHHHh#')],
+    51: [(8, '#RRRRRr#'), (16, '#RRRRRRr#')],
+    52: [(8, '#' * 8), (16, '#' * 9)],
 }
 HILT = (-1, 14, [   # hilt (blue-grey wrap with diamond marks) up and back over the shoulder, gold star guard
     '##.......',
@@ -249,11 +278,10 @@ def build_head(img):
     # Tanjiro's hair mass (inner pixels only, not his outline), minus the new face
     hair = opaque & head_box & ~is_outline & ~is_skin & ~face & ~ear
     hair &= ~((tx >= 24) & (ty >= 19)) & ~((tx <= 8) & (ty >= 21))         # earrings
-    hair |= head_box & (ty >= 8) & (ty <= 18) & (tx == 24)                  # front side lock
+    hair |= head_box & (ty >= 8) & (ty <= 17) & (tx == 24)                  # front lock framing the face
     for a, b, c in SPIKES:
         tri(hair, a, b, c, OX, OY)
     hair &= ~face & ~ear
-    hair &= ~((ty >= 17) & (tx <= 4)) & ~((ty >= 19) & (tx <= 5))          # short nape
     # fill enclosed gaps between spikes (anything transparent not reachable from the canvas edge)
     free = ~hair & ~face & ~ear
     reach = np.zeros_like(free); reach[0, :] = free[0, :]; reach[:, 0] |= free[:, 0]; reach[:, -1] |= free[:, -1]
@@ -268,9 +296,8 @@ def build_head(img):
     for _ in range(2):                                        # fill pinholes between spikes (read as noise)
         n4 = sum(np.roll(hair, d, ax) for d in (-1, 1) for ax in (0, 1))
         hair |= ~hair & (n4 >= 3) & ~face & ~ear & (ty <= 21)
-    for _ in range(2):                                        # drop 1-px whiskers at spike tips
-        nb = sum(np.roll(np.roll(hair, dy, 0), dx, 1) for dy in (-1, 0, 1) for dx in (-1, 0, 1)) - hair
-        hair &= ~(hair & (nb <= 1))
+    nb = sum(np.roll(np.roll(hair, dy, 0), dx, 1) for dy in (-1, 0, 1) for dx in (-1, 0, 1)) - hair
+    hair &= ~(hair & (nb == 0))                               # drop isolated specks only (1-px tips stay)
     # clear the old head and repaint
     img[(ty <= 21) & (tx <= 27)] = 0
     paint(img, hair, 'W')
@@ -290,16 +317,18 @@ def build_head(img):
         m = np.zeros_like(hair); tri(m, a, b, c, OX, OY)
         side = ((tx - mid[0]) * n[0] + (ty - mid[1]) * n[1]) > 0.5
         paint(img, m & hair & side, 'S')
-    for a, b, c in SPIKES:                                    # strand line along each spike
+    for i, (a, b, c) in enumerate(SPIKES):                    # thin strand line from the root into each spike
         mid = ((a[0] + b[0]) // 2, (a[1] + b[1]) // 2)
-        pts = line(mid, c); pts = pts[len(pts) // 3:-2]
+        d = (c[0] - mid[0], c[1] - mid[1]); L = max(abs(d[0]), abs(d[1]), 1)
+        root = (round(mid[0] - d[0] * 2 / L), round(mid[1] - d[1] * 2 / L))
+        pts = line(root, c)[:-2]
         for x, y in pts:
             if hair[y + OY, x + OX]:
-                img[y + OY, x + OX, :3] = K['U']
+                img[y + OY, x + OX, :3] = K['V' if i % 3 == 0 else 'U']
     for a, b in CLUMPS:
         for x, y in line(a, b):
             if hair[y + OY, x + OX]:
-                img[y + OY, x + OX, :3] = K['S']
+                img[y + OY, x + OX, :3] = K['U']
     # face and ear
     paint(img, face, 'c')
     paint(img, face & (tx == 11), 'l')
@@ -313,7 +342,10 @@ def build_head(img):
     ring &= ~body & (ty <= 22)
     paint(img, ring, '#')
     edge = hair & ((np.roll(face, 1, 0)) | (np.roll(face, -1, 0)) | np.roll(face, 1, 1) | np.roll(face, -1, 1))
-    paint(img, edge, '#')
+    lock = np.zeros_like(hair)
+    for y, (a, b) in _LOCK.items():
+        lock[y + OY, a + OX:b + OX + 1] = True
+    paint(img, edge & ~lock, '#')
     # nose bump + jaw/chin from the template
     img[19 + OY, 19 + OX, :3] = K['l']
     for y in (22, 23):
@@ -322,6 +354,17 @@ def build_head(img):
         img[y + OY][keep] = row[keep]
         img[y + OY][(tx[y + OY] >= 24) & (tx[y + OY] <= 27)] = 0          # Tanjiro's earring
     return img
+
+
+def paint_lock(img):
+    """the signature fringe lock, drawn last so it lies over the brow and the eye's inner corner"""
+    for y, (a, b) in _LOCK.items():
+        for x in range(a, b + 1):
+            img[y + OY, x + OX, :3] = K['W' if x == a else 'S']; img[y + OY, x + OX, 3] = 255
+        for x in (a - 1, b + 1):                       # thin outline where it lies on skin
+            if tuple(img[y + OY, x + OX, :3]) in [K['c'], K['l']]:
+                img[y + OY, x + OX, :3] = K['#']
+    img[19 + OY, 20 + OX, :3] = K['#']; img[19 + OY, 20 + OX, 3] = 255
 
 
 def recolour_t(img, mapping, box):
@@ -339,11 +382,15 @@ def build(face=CHOSEN, pose=POSE):
         img = build_head(img)
         for x, y, rows in FACES[face]:
             se.patch(img, x + OX, y + OY, rows, K)
+        paint_lock(img)
         spec = {y + OY: [(x + OX, t) for x, t in v] for y, v in COMPOSED.items()}
         se.patch(img, 0, 24 + OY, se.seg_rows(img.shape[1], {y - 24 - OY: v for y, v in spec.items() if y >= 24 + OY}), K)
         se.patch(img, 0, 22 + OY, se.seg_rows(img.shape[1], {y - 22 - OY: v for y, v in spec.items() if y < 24 + OY}, fill='?'), K)
         se.patch(img, HILT[0] + OX, HILT[1] + OY, HILT[2], K)
         se.patch_under(img, SHEATH[0] + OX, SHEATH[1] + OY, SHEATH[2], K)
+        a = img[..., 3] > 0                                            # drop stray single pixels
+        n4 = sum(np.roll(a, d, ax) for d in (-1, 1) for ax in (0, 1))
+        img[a & (n4 == 0)] = 0
         return se.crop_to_content(img)
     # sword: teal-tinted blade, blue-grey hilt and pommel
     recolour_t(img, {(46, 46, 54): K['B'], (196, 190, 201): K['X'], (200, 205, 216): K['X'],
@@ -382,8 +429,29 @@ def faces_sheet(path, z=12):
     c.convert('RGB').save(path)
 
 
+def hair_vs_ref(path, z=12):
+    """head at 12x next to crops of the face refs 00 (3/4) and 01 (front), scaled to the same height"""
+    head = se.crop_to_content(build())[0:OY + 24 - 1]
+    hd = Image.fromarray(head, 'RGBA'); hd = hd.resize((hd.width * z, hd.height * z), Image.NEAREST)
+    H = hd.height
+    refs = []
+    for fn, box in (('00_Ep363HitsugayaProfile.png', (60, 0, 560, 470)), ('01_Ep257HitsugayaProfile.png', (0, 0, 762, 700))):
+        r = Image.open(f'refs/redraw/hitsugaya/{fn}').convert('RGBA').crop(box)
+        refs.append(r.resize((round(r.width * H / r.height), H), Image.LANCZOS))
+    W = hd.width + sum(r.width for r in refs) + 80
+    c = Image.new('RGBA', (W, H + 40), (213, 225, 237, 255)); x = 20
+    for im in [hd] + refs:
+        c.alpha_composite(im, (x, 20)); x += im.width + 20
+    c.convert('RGB').save(path)
+
+
 if __name__ == '__main__':
     img = build()
     se.save(img, OUT)
-    se.zoom([se.crop_to_content(build(pose='tanjiro')), img], 'out/style/hitsugaya_check.png', z=10)  # old | new
+    # check: previous version | new. PREV defaults to the v2 Tanjiro-pose build; pass a saved sprite path as
+    # argv[1] to compare against a specific earlier version instead.
+    prev = se.load(sys.argv[1]) if len(sys.argv) > 1 else se.crop_to_content(build(pose='tanjiro'))
+    se.zoom([prev, img], 'out/style/hitsugaya_check.png', z=10)
     faces_sheet('out/style/hitsugaya_faces.png')
+    hair_vs_ref('out/style/hitsugaya_hair_vs_ref.png')
+
