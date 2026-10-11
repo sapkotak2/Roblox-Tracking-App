@@ -16,6 +16,7 @@ CHARS = {  # key: (wiki subdomain, page title)
     'makima': ('chainsaw-man', 'Makima'), 'erza': ('fairytail', 'Erza Scarlet'), 'ishida': ('bleach', 'Uryū Ishida'),
     'daki': ('kimetsu-no-yaiba', 'Daki'), 'armin': ('attackontitan', 'Armin Arlert'),
     'lelouch': ('codegeass', 'Lelouch vi Britannia'), 'asuna': ('swordartonline', 'Asuna'),
+    'hitsugaya': ('bleach', 'Tōshirō Hitsugaya'),
 }
 GOOD = re.compile(r'anime|infobox|portrait|face|full|body|profile|design|appearance|manga|color|colour', re.I)
 BAD = re.compile(r'logo|icon|symbol|title|volume|chapter_\d|episode_\d|cover|flag|map|signature|\.svg|\.gif|kanji', re.I)
