@@ -31,6 +31,41 @@ T = 'out/style/tanjiro_clean.png'
 OUT = 'out/style/hitsugaya.png'
 OX, OY = 8, 8       # padding left (back spikes, sheath) and top (tall hair)
 CHOSEN = 'cool-serious'
+# hair tracing (tools/style/trace_hair.py): landmarks in ref 00 (3/4 view, already facing right) and in the
+# sprite's face block (template coords; eye centres, chin bottom)
+REF = 'refs/redraw/hitsugaya/00_Ep363HitsugayaProfile.png'
+REF_MIRROR = True     # his hair sweeps to his left in ref 00; mirrored it sweeps UP and BACK on our sprite
+REF_HEAD_BOX = (57, 0, 532, 455)   # (in mirrored coords)
+REF_EYES, REF_CHIN = ((233, 336), (343, 336)), (281, 492)   # mirrored coords
+SPR_EYES, SPR_CHIN = ((9.5, 16.5), (17.5, 16.5)), (16.5, 24.0)   # x shifted 4 px back: 3/4 head
+SPR_BOX = (-8, -12, 30, 24)
+TRACE_THRESH = 0.3
+# hand clean-up of the traced silhouette: a few large dominant spikes rising and curving up and BACK,
+# long side locks over the ear down to the jaw, and the front kept tight to the face (3/4 view)
+BIG_SPIKES = [((1, 3), (8, 0), (-5, -7)),       # back spike, curving up and back
+              ((7, 0), (13, -3), (3, -8)),      # tallest, up and back
+              ((12, -2), (17, -2), (12, -8)),   # crown
+              ((17, -1), (22, 1), (19, -6)),    # front of the crown, up
+              ((0, 7), (2, 13), (-6, 6)),       # back, flaring out at temple level
+              ((2, 11), (5, 15), (-3, 15))]     # lower back lock, pointing down and back
+SIDE_LOCKS = [((4, 13), (9, 13), (6, 22)),      # back side lock over the ear, pointed at the jaw
+              ((7, 14), (11, 14), (10, 21))]
+
+
+def HAIR_ADD_MASK(tx, ty):
+    m = np.zeros(tx.shape, bool)
+    for a, b, c in BIG_SPIKES + SIDE_LOCKS:
+        tri(m, a, b, c, OX, OY)
+    m |= (tx == 24) & (ty >= 8) & (ty <= 17)                    # front lock framing the face
+    return m
+
+
+def HAIR_CUT_MASK(tx, ty):
+    return ((tx >= 26) & (ty >= 6)) | ((tx >= 27) & (ty >= 3))  # nothing in front of the face
+
+
+STRANDS = [((10, 4), (3, -7), 'U'), ((14, 3), (12, -7), 'U'), ((19, 3), (19, -5), 'U'), ((6, 7), (-4, 6), 'U'),
+           ((12, 7), (9, 2), 'S')]                              # (from, to, colour key) along the big spikes
 POSE = 'composed'    # 'composed' (v3: arms crossed, sword sheathed on the back) or 'tanjiro' (v2)
 
 K = {
@@ -261,7 +296,7 @@ def paint(img, m, key):
     img[m, :3] = K[key]; img[m, 3] = 255
 
 
-def build_head(img):
+def build_head(img, hair_mode='trace'):
     h, w = img.shape[:2]
     tpl = img.copy()
     rgb = tpl[..., :3].astype(int)
@@ -275,13 +310,37 @@ def build_head(img):
     head_box = (ty <= 21) & (tx <= 25)
     face = ranges_mask((h, w), FACE, OX, OY)
     ear = ranges_mask((h, w), EAR, OX, OY)
-    # Tanjiro's hair mass (inner pixels only, not his outline), minus the new face
-    hair = opaque & head_box & ~is_outline & ~is_skin & ~face & ~ear
-    hair &= ~((tx >= 24) & (ty >= 19)) & ~((tx <= 8) & (ty >= 21))         # earrings
-    hair |= head_box & (ty >= 8) & (ty <= 17) & (tx == 24)                  # front lock framing the face
-    for a, b, c in SPIKES:
-        tri(hair, a, b, c, OX, OY)
-    hair &= ~face & ~ear
+    if hair_mode == 'flames':
+        # previous round (kept for the check image and for spiky characters): template mass + thin FLAMES
+        hair = opaque & head_box & ~is_outline & ~is_skin & ~face & ~ear
+        hair &= ~((tx >= 24) & (ty >= 19)) & ~((tx <= 8) & (ty >= 21))
+        hair |= head_box & (ty >= 8) & (ty <= 17) & (tx == 24)
+        for a, b, c in SPIKES:
+            tri(hair, a, b, c, OX, OY)
+        hair &= ~face & ~ear
+        img[(ty <= 21) & (tx <= 27)] = 0
+        paint(img, hair, 'W')
+        for a, b, c in SPIKES:
+            mid = np.array([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]); ax = np.array(c) - mid
+            n = np.array([-ax[1], ax[0]]); n = -n if n @ np.array([-1.0, 1.0]) < 0 else n
+            m = np.zeros_like(hair); tri(m, a, b, c, OX, OY)
+            paint(img, m & hair & (((tx - mid[0]) * n[0] + (ty - mid[1]) * n[1]) > 0.5), 'S')
+            for x, y in line((round(mid[0]), round(mid[1])), c)[:-2]:
+                if hair[y + OY, x + OX]:
+                    img[y + OY, x + OX, :3] = K['U']
+        return finish_head(img, tpl, hair, face, ear, tx, ty)
+    # hair silhouette TRACED from ref 00 (tools/style/trace_hair.py), aligned on the eyes and chin
+    import trace_hair as th
+    rm = th.ref_mask(REF, th.white_hair, REF_HEAD_BOX, mirror=REF_MIRROR)
+    tm, _ = th.to_sprite(rm, REF_EYES, REF_CHIN, SPR_EYES, SPR_CHIN, SPR_BOX, thresh=TRACE_THRESH)
+    hair = np.zeros((h, w), bool)
+    x0, y0 = SPR_BOX[0] + OX, SPR_BOX[1] + OY
+    hh, ww = tm.shape
+    ys0, xs0 = max(0, -y0), max(0, -x0)
+    hair[y0 + ys0:y0 + hh, x0 + xs0:x0 + ww] = tm[ys0:, xs0:][:h - y0 - ys0, :w - x0 - xs0]
+    hair = (hair | HAIR_ADD_MASK(tx, ty)) & ~HAIR_CUT_MASK(tx, ty)
+    ear &= ~hair                                               # side locks cover the ear
+    hair &= ~face & ~ear & (ty <= 22)
     # fill enclosed gaps between spikes (anything transparent not reachable from the canvas edge)
     free = ~hair & ~face & ~ear
     reach = np.zeros_like(free); reach[0, :] = free[0, :]; reach[:, 0] |= free[:, 0]; reach[:, -1] |= free[:, -1]
@@ -301,34 +360,19 @@ def build_head(img):
     # clear the old head and repaint
     img[(ty <= 21) & (tx <= 27)] = 0
     paint(img, hair, 'W')
-    # shading: light from the top-front; shade the lower/back edge of every clump
-    sh = np.zeros_like(hair)
-    sh[:, 1:] |= hair[:, 1:] & ~hair[:, :-1]                 # back edge
-    sh[:-1] |= hair[:-1] & ~hair[1:]                          # lower edge
-    sh |= hair & (tx <= 5) & (ty >= 15)                       # under the back spikes, above the ear
+    # shading: mostly flat white; soft blue-grey only in the lower and back part of the mass + strand lines
+    sh = hair & ((ty >= 13) & (tx <= 10) | (ty >= 18) | (tx - ty <= -4) & (ty >= 4))   # lower + back part
+    sh[:-1] |= hair[:-1] & ~hair[1:] & (ty[:-1] >= 4)          # under-edge of every lock
     paint(img, sh, 'S')
-    deep = hair & (tx <= 6) & (ty >= 17)
-    paint(img, deep, 'U')
-    for a, b, c in SPIKES:                                    # shade the lower-back half of each spike
-        mid = np.array([(a[0] + b[0]) / 2, (a[1] + b[1]) / 2]); ax = np.array(c) - mid
-        n = np.array([-ax[1], ax[0]])
-        if n @ np.array([-1.0, 1.0]) < 0:
-            n = -n
-        m = np.zeros_like(hair); tri(m, a, b, c, OX, OY)
-        side = ((tx - mid[0]) * n[0] + (ty - mid[1]) * n[1]) > 0.5
-        paint(img, m & hair & side, 'S')
-    for i, (a, b, c) in enumerate(SPIKES):                    # thin strand line from the root into each spike
-        mid = ((a[0] + b[0]) // 2, (a[1] + b[1]) // 2)
-        d = (c[0] - mid[0], c[1] - mid[1]); L = max(abs(d[0]), abs(d[1]), 1)
-        root = (round(mid[0] - d[0] * 2 / L), round(mid[1] - d[1] * 2 / L))
-        pts = line(root, c)[:-2]
-        for x, y in pts:
-            if hair[y + OY, x + OX]:
-                img[y + OY, x + OX, :3] = K['V' if i % 3 == 0 else 'U']
-    for a, b in CLUMPS:
+    paint(img, hair & (ty >= 17) & (tx <= 8), 'U')
+    for a, b, col in STRANDS:
         for x, y in line(a, b):
             if hair[y + OY, x + OX]:
-                img[y + OY, x + OX, :3] = K['U']
+                img[y + OY, x + OX, :3] = K[col]
+    return finish_head(img, tpl, hair, face, ear, tx, ty)
+
+
+def finish_head(img, tpl, hair, face, ear, tx, ty):
     # face and ear
     paint(img, face, 'c')
     paint(img, face & (tx == 11), 'l')
@@ -372,14 +416,14 @@ def recolour_t(img, mapping, box):
     se.recolour(img, mapping, (x0 + OX, y0 + OY, x1 + OX, y1 + OY))
 
 
-def build(face=CHOSEN, pose=POSE):
+def build(face=CHOSEN, pose=POSE, hair_mode='trace'):
     check()
     img = se.pad(se.load(T), left=OX, top=OY, bottom=1)
     if pose == 'composed':
         chin = img[22 + OY:24 + OY, 10 + OX:24 + OX].copy()
         img[22 + OY:] = 0; img[14 + OY:22 + OY, 26 + OX:] = 0          # drop Tanjiro's body and sword
         img[22 + OY:24 + OY, 10 + OX:24 + OX] = chin
-        img = build_head(img)
+        img = build_head(img, hair_mode)
         for x, y, rows in FACES[face]:
             se.patch(img, x + OX, y + OY, rows, K)
         paint_lock(img)
@@ -450,7 +494,7 @@ if __name__ == '__main__':
     se.save(img, OUT)
     # check: previous version | new. PREV defaults to the v2 Tanjiro-pose build; pass a saved sprite path as
     # argv[1] to compare against a specific earlier version instead.
-    prev = se.load(sys.argv[1]) if len(sys.argv) > 1 else se.crop_to_content(build(pose='tanjiro'))
+    prev = se.load(sys.argv[1]) if len(sys.argv) > 1 else build(hair_mode='flames')   # previous round's hair
     se.zoom([prev, img], 'out/style/hitsugaya_check.png', z=10)
     faces_sheet('out/style/hitsugaya_faces.png')
     hair_vs_ref('out/style/hitsugaya_hair_vs_ref.png')
