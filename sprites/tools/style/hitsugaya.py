@@ -57,8 +57,8 @@ def HAIR_CUT_MASK(tx, ty):
 
 
 STRANDS = [((12, 7), (12, 0), 'U'), ((9, 7), (5, 2), 'U'), ((15, 7), (17, 1), 'U'), ((6, 10), (1, 12), 'U')]                              # (from, to, colour key) along the big spikes
-HAIR = 'C'           # hair option in hitsugaya.png: 'A', 'B', 'C' (see HAIR_OPTIONS), or 'trace'
-POSE = 'composed'    # 'composed' (v3: arms crossed, sword sheathed on the back) or 'tanjiro' (v2)
+HAIR = 'A'           # owner's pick. hair option in hitsugaya.png: 'A', 'B', 'C' (see HAIR_OPTIONS), or 'trace'
+POSE = 'ready'       # 'ready' (v5: sword drawn and held low), 'composed' (v3/v4: arms crossed), 'tanjiro' (v2)
 
 K = {
     '#': (26, 21, 33),
@@ -236,6 +236,30 @@ COMPOSED = {
     51: [(8, '#RRRRRr#'), (16, '#RRRRRRr#')],
     52: [(8, '#' * 8), (16, '#' * 9)],
 }
+# v5 pose "ready": upright and calm, straight legs; Hyorinmaru drawn and held low in the front hand, blade
+# pointing down and slightly forward (teal blade, gold star guard); back arm relaxed behind the body; the
+# empty sheath stays on his back on the sash.
+READY = dict(COMPOSED)
+READY.update({
+    25: [(4, '#HHHHGGHhKKwKK#KKKL#')],
+    26: [(4, '#HHHHHGGhKwKKK#KKKL#')],
+    27: [(4, '#HHHHh#GGwKKKK#KKKL#')],
+    28: [(4, '#HHHh#KKqCgKKK#KKKL#')],
+    29: [(4, '#HHHh#KKKqGKKK#KKKLL#')],
+    30: [(4, '#HHHh#KKKKqGKK#KKKKL#')],
+    31: [(4, '#HHHh#KKKKKqGK#KKKKL#')],
+    32: [(4, '#HHHh#KKKKKKqG#KKKKL#')],
+    33: [(4, '#HHHh#KKKKKKKq#KKKKLL#')],
+    34: [(4, '#HHHh#KKKKKKKK#KKKKLL#')],
+    35: [(4, '#HHHh#KKKKKKKK##hhhhh#')],
+    36: [(4, '#HHHh#KKKKKKKK#'), (19, '##ccc#')],
+    37: [(4, '#HHh#hHHHHHHHHh#'), (19, '#lccc#')],
+    38: [(4, '#HHh#hhhhhhhhhh#'), (20, '#lc#')],
+})
+READY_STAR = (21, 38, ['..y..', '.yYy.', 'yYnYy', '.yYy.', '..y..'])
+READY_BLADE = ((24, 41), (34, 51))
+
+
 HILT = (-1, 14, [   # hilt (blue-grey wrap with diamond marks) up and back over the shoulder, gold star guard
     '##.......',
     '#nn#.....',
@@ -376,8 +400,8 @@ HAIR_OPTIONS = {
     'A': dict(  # "DS game": the Bleach DS sprites' construction - tall flame of 7 medium spikes leaning back,
                 # light tops, blue-grey shadow sides, a separation line between neighbours; ear visible
         base='dome',
-        spikes=[((-2, 6), (4, 2), (-5, -2)), ((1, 3), (8, 0), (-1, -6)), ((5, 1), (12, -1), (4, -9)),
-                ((9, 0), (16, -1), (9, -10)), ((13, 0), (20, 0), (15, -9)), ((17, 1), (24, 3), (20, -6)),
+        spikes=[((-2, 6), (4, 2), (-5, -2)), ((1, 3), (8, 0), (-1, -6)), ((5, 1), (12, -1), (4, -8)),
+                ((9, 0), (16, -1), (9, -8)), ((13, 0), (20, 0), (15, -8)), ((17, 1), (24, 3), (20, -6)),
                 ((21, 3), (26, 6), (25, -1)), ((-1, 9), (2, 15), (-5, 13)), ((2, 15), (6, 19), (0, 20))],
         bangs=[((24, 8), (26, 8), (25, 16))],
         fringe=[((11, 9), (14, 9), (12, 12)), ((14, 9), (17, 9), (16, 12)), ((21, 9), (24, 9), (23, 12))],
@@ -520,7 +544,7 @@ def build(face=CHOSEN, pose=POSE, hair_mode=None, crop=True):
     hair_mode = hair_mode or HAIR
     check()
     img = se.pad(se.load(T), left=OX, top=OY, bottom=1)
-    if pose == 'composed':
+    if pose in ('composed', 'ready'):
         chin = img[22 + OY:24 + OY, 10 + OX:24 + OX].copy()
         img[22 + OY:] = 0; img[14 + OY:22 + OY, 26 + OX:] = 0          # drop Tanjiro's body and sword
         img[22 + OY:24 + OY, 10 + OX:24 + OX] = chin
@@ -528,10 +552,16 @@ def build(face=CHOSEN, pose=POSE, hair_mode=None, crop=True):
         for x, y, rows in FACES[face]:
             se.patch(img, x + OX, y + OY, rows, K)
         paint_lock(img)
-        spec = {y + OY: [(x + OX, t) for x, t in v] for y, v in COMPOSED.items()}
+        spec = {y + OY: [(x + OX, t) for x, t in v] for y, v in (COMPOSED if pose == 'composed' else READY).items()}
         se.patch(img, 0, 24 + OY, se.seg_rows(img.shape[1], {y - 24 - OY: v for y, v in spec.items() if y >= 24 + OY}), K)
         se.patch(img, 0, 22 + OY, se.seg_rows(img.shape[1], {y - 22 - OY: v for y, v in spec.items() if y < 24 + OY}, fill='?'), K)
-        se.patch(img, HILT[0] + OX, HILT[1] + OY, HILT[2], K)
+        if pose == 'composed':
+            se.patch(img, HILT[0] + OX, HILT[1] + OY, HILT[2], K)
+        else:
+            (bx0, by0), (bx1, by1) = READY_BLADE
+            se.blade(img, (bx0 + OX, by0 + OY), (bx1 + OX, by1 + OY), K['B'], K['X'])
+            sx, sy, rows = READY_STAR
+            se.patch(img, sx + OX, sy + OY, [r.replace('.', '?') for r in rows], K)
         se.patch_under(img, SHEATH[0] + OX, SHEATH[1] + OY, SHEATH[2], K)
         a = img[..., 3] > 0                                            # drop stray single pixels
         n4 = sum(np.roll(a, d, ax) for d in (-1, 1) for ax in (0, 1))
@@ -582,12 +612,12 @@ def hair_vs_ref(path, z=12):
     img = se.pad(img, left=pad, top=pad)
     head = img[pad + OY + SPR_BOX[1]:pad + OY + 24, pad + OX + SPR_BOX[0]:pad + OX + SPR_BOX[2]]
     tgt = th.target(REF, MAPPING, (SPR_BOX[0], SPR_BOX[1], SPR_BOX[2], 24), mirror=REF_MIRROR)
-    head, tgt = head[8:], tgt[8:]                              # rows -4..23 (the window above is off the ref)
+    head, tgt = head[3:], tgt[3:]                              # rows -9..23 (top of the tallest spike)
     hd = Image.fromarray(head, 'RGBA'); hd = hd.resize((hd.width * z, hd.height * z), Image.NEAREST)
     tg = Image.fromarray(tgt).convert('RGBA'); tg = tg.resize((tg.width * z, tg.height * z), Image.NEAREST)
     H = hd.height
     # same window of the reference, unpixelated
-    (ax, ay), (bx, by) = MAPPING.back(SPR_BOX[0], SPR_BOX[1] + 8), MAPPING.back(SPR_BOX[2], 24)
+    (ax, ay), (bx, by) = MAPPING.back(SPR_BOX[0], SPR_BOX[1] + 3), MAPPING.back(SPR_BOX[2], 24)
     r = Image.open(REF).convert('RGBA').transpose(Image.FLIP_LEFT_RIGHT) if REF_MIRROR else Image.open(REF).convert('RGBA')
     r = r.crop((int(ax), int(max(0, ay)), int(bx), int(by)))
     r = r.resize((round(r.width * H / r.height), H), Image.LANCZOS)
@@ -635,7 +665,7 @@ if __name__ == '__main__':
     se.save(img, OUT)
     # check: previous version | new. PREV defaults to the v2 Tanjiro-pose build; pass a saved sprite path as
     # argv[1] to compare against a specific earlier version instead.
-    prev = se.load(sys.argv[1]) if len(sys.argv) > 1 else build(hair_mode='trace')   # previous round's hair
+    prev = se.load(sys.argv[1]) if len(sys.argv) > 1 else build(pose='composed')     # crossed arms | new pose
     se.zoom([prev, img], 'out/style/hitsugaya_check.png', z=10)
     faces_sheet('out/style/hitsugaya_faces.png')
     hair_vs_ref('out/style/hitsugaya_hair_vs_ref.png')
