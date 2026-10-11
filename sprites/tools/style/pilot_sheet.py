@@ -1,6 +1,7 @@
 """Pilot comparison sheet: out/style/pilot_sheet.png
 
-Row 1 (6x, nearest): clean templates Luffy, Tanjiro, Shanks, Robin | NEW Okkotsu | rejected redraw | old game sprite.
+Row 1 (6x, nearest): clean templates Luffy, Tanjiro, Shanks, Robin | NEW Okkotsu, NEW Hitsugaya | Okkotsu rejected
+redraw, old game sprites of Okkotsu and Hitsugaya.
 Row 2: the style sheet's own roster row (Goku ... Shanks) at the SAME sprite-pixel scale (6 screen px per
 sprite pixel). The roster row has 1.695 sheet px per sprite pixel, so it is resized by 6/1.695 (bicubic,
 nothing re-drawn), followed by the 4x row (Tanjiro, Zoro, Robin, Luffy, Shanks; 3.39 px per sprite pixel)
@@ -20,8 +21,10 @@ ITEMS = [
     ('out/style/shanks_clean.png', 'Shanks (clean)', None),
     ('out/style/robin_clean.png', 'Robin (clean)', None),
     ('out/style/okkotsu.png', 'NEW Okkotsu', (40, 120, 60)),
-    ('out/redraw/okkotsu.png', 'rejected redraw', (190, 40, 40)),
-    ('final/native/okkotsu.png', 'old game sprite', (120, 120, 120)),
+    ('out/style/hitsugaya.png', 'NEW Hitsugaya', (40, 120, 60)),
+    ('out/redraw/okkotsu.png', 'Okkotsu: rejected', (190, 40, 40)),
+    ('final/native/okkotsu.png', 'Okkotsu: old', (120, 120, 120)),
+    ('final/native/hitsugaya.png', 'Hitsugaya: old', (120, 120, 120)),
 ]
 ROSTER = (0, 1855, 812, 1975)      # sheet crop: roster row incl. name labels
 ROW4X = (10, 1022, 812, 1262)      # sheet crop: the 4x row
@@ -39,7 +42,7 @@ def main():
     W = max(W1, r1.width, r2.width) + 40
     H = 50 + H1 + 50 + 60 + r1.height + 60 + r2.height + 20
     c = Image.new('RGBA', (W, H), BG); d = ImageDraw.Draw(c)
-    d.text((20, 12), 'Okkotsu pilot, 6x. Top: clean templates + NEW + rejected/old. Below: the style sheet itself at the same sprite-pixel scale.', fill=(20, 20, 30), font=fb)
+    d.text((20, 12), 'Pilot, 6x: NEW Okkotsu + NEW Hitsugaya next to the clean templates and the old/rejected sprites. Below: the style sheet itself at the same sprite-pixel scale.', fill=(20, 20, 30), font=fb)
     x = gap; base = 50 + H1
     for s, lab, col in sprites:
         c.alpha_composite(s.resize((s.width * Z, s.height * Z), Image.NEAREST), (x, base - s.height * Z))
