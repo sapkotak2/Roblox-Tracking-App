@@ -37,35 +37,26 @@ REF = 'refs/redraw/hitsugaya/00_Ep363HitsugayaProfile.png'
 REF_MIRROR = True     # his hair sweeps to his left in ref 00; mirrored it sweeps UP and BACK on our sprite
 REF_HEAD_BOX = (57, 0, 532, 455)   # (in mirrored coords)
 REF_EYES, REF_CHIN = ((233, 336), (343, 336)), (281, 492)   # mirrored coords
-SPR_EYES, SPR_CHIN = ((9.5, 16.5), (17.5, 16.5)), (16.5, 24.0)   # x shifted 4 px back: 3/4 head
+# mapping ref -> sprite: eye midpoint lands over the head centre (3/4 view: the frontal ref's hair mass is
+# centred on the head, not on our face block); sx sets the hair width (~27 px); s_up puts the hair top at
+# row -2 so hair above the brow is ~1.3x brow-to-chin; s_dn = eye-to-chin.
+import trace_hair as th
+MAPPING = th.Mapping(anchor_ref=(288, 336), anchor_spr=(12.5, 16.5), sx=0.063, s_up=0.0585, s_dn=0.048)
 SPR_BOX = (-8, -12, 30, 24)
-TRACE_THRESH = 0.3
-# hand clean-up of the traced silhouette: a few large dominant spikes rising and curving up and BACK,
-# long side locks over the ear down to the jaw, and the front kept tight to the face (3/4 view)
-BIG_SPIKES = [((1, 3), (8, 0), (-5, -7)),       # back spike, curving up and back
-              ((7, 0), (13, -3), (3, -8)),      # tallest, up and back
-              ((12, -2), (17, -2), (12, -8)),   # crown
-              ((17, -1), (22, 1), (19, -6)),    # front of the crown, up
-              ((0, 7), (2, 13), (-6, 6)),       # back, flaring out at temple level
-              ((2, 11), (5, 15), (-3, 15))]     # lower back lock, pointing down and back
-SIDE_LOCKS = [((4, 13), (9, 13), (6, 22)),      # back side lock over the ear, pointed at the jaw
-              ((7, 14), (11, 14), (10, 21))]
+TRACE_THRESH = 0.35
+REF_CENTRE = (287, 227)      # centre of the hair mass in the (mirrored) ref, for the spike/notch rays
+TRACE_TIP = 0.12             # hysteresis: keep the thin spike tips that connect to the mass
 
 
-def HAIR_ADD_MASK(tx, ty):
-    m = np.zeros(tx.shape, bool)
-    for a, b, c in BIG_SPIKES + SIDE_LOCKS:
-        tri(m, a, b, c, OX, OY)
-    m |= (tx == 24) & (ty >= 8) & (ty <= 17)                    # front lock framing the face
-    return m
+def HAIR_ADD_MASK(tx, ty):                                     # only the front lock framing the face
+    return (tx == 24) & (ty >= 8) & (ty <= 17)
 
 
 def HAIR_CUT_MASK(tx, ty):
-    return ((tx >= 26) & (ty >= 6)) | ((tx >= 27) & (ty >= 3))  # nothing in front of the face
+    return (tx >= 26) & (ty >= 6)                              # nothing in front of the face
 
 
-STRANDS = [((10, 4), (3, -7), 'U'), ((14, 3), (12, -7), 'U'), ((19, 3), (19, -5), 'U'), ((6, 7), (-4, 6), 'U'),
-           ((12, 7), (9, 2), 'S')]                              # (from, to, colour key) along the big spikes
+STRANDS = [((12, 7), (12, 0), 'U'), ((9, 7), (5, 2), 'U'), ((15, 7), (17, 1), 'U'), ((6, 10), (1, 12), 'U')]                              # (from, to, colour key) along the big spikes
 POSE = 'composed'    # 'composed' (v3: arms crossed, sword sheathed on the back) or 'tanjiro' (v2)
 
 K = {
@@ -330,9 +321,10 @@ def build_head(img, hair_mode='trace'):
                     img[y + OY, x + OX, :3] = K['U']
         return finish_head(img, tpl, hair, face, ear, tx, ty)
     # hair silhouette TRACED from ref 00 (tools/style/trace_hair.py), aligned on the eyes and chin
-    import trace_hair as th
     rm = th.ref_mask(REF, th.white_hair, REF_HEAD_BOX, mirror=REF_MIRROR)
-    tm, _ = th.to_sprite(rm, REF_EYES, REF_CHIN, SPR_EYES, SPR_CHIN, SPR_BOX, thresh=TRACE_THRESH)
+    tm, _ = th.to_sprite(rm, MAPPING, SPR_BOX, thresh=TRACE_THRESH, tip=TRACE_TIP)
+    tips, valleys = th.find_tips(rm, REF_CENTRE, min_prom=14, window=5, arc=(120, 359))
+    tm = th.sharpen(tm, SPR_BOX, MAPPING, tips, [], REF_CENTRE)   # notches: the vote already keeps them
     hair = np.zeros((h, w), bool)
     x0, y0 = SPR_BOX[0] + OX, SPR_BOX[1] + OY
     hh, ww = tm.shape
@@ -416,7 +408,7 @@ def recolour_t(img, mapping, box):
     se.recolour(img, mapping, (x0 + OX, y0 + OY, x1 + OX, y1 + OY))
 
 
-def build(face=CHOSEN, pose=POSE, hair_mode='trace'):
+def build(face=CHOSEN, pose=POSE, hair_mode='trace', crop=True):
     check()
     img = se.pad(se.load(T), left=OX, top=OY, bottom=1)
     if pose == 'composed':
@@ -435,7 +427,7 @@ def build(face=CHOSEN, pose=POSE, hair_mode='trace'):
         a = img[..., 3] > 0                                            # drop stray single pixels
         n4 = sum(np.roll(a, d, ax) for d in (-1, 1) for ax in (0, 1))
         img[a & (n4 == 0)] = 0
-        return se.crop_to_content(img)
+        return se.crop_to_content(img) if crop else img
     # sword: teal-tinted blade, blue-grey hilt and pommel
     recolour_t(img, {(46, 46, 54): K['B'], (196, 190, 201): K['X'], (200, 205, 216): K['X'],
                      (87, 89, 102): K['A']}, (23, 14, 45, 31))
@@ -474,18 +466,27 @@ def faces_sheet(path, z=12):
 
 
 def hair_vs_ref(path, z=12):
-    """head at 12x next to crops of the face refs 00 (3/4) and 01 (front), scaled to the same height"""
-    head = se.crop_to_content(build())[0:OY + 24 - 1]
+    """ref 00 crop (mirrored, facing right) | pixelated target (whole ref head through MAPPING, 8 colours) |
+    our head, all at the same height"""
+    img = build(crop=False)                                    # head in template coords (OY >= -SPR_BOX[1])
+    pad = max(0, -SPR_BOX[1] - OY, -SPR_BOX[0] - OX)
+    img = se.pad(img, left=pad, top=pad)
+    head = img[pad + OY + SPR_BOX[1]:pad + OY + 24, pad + OX + SPR_BOX[0]:pad + OX + SPR_BOX[2]]
+    tgt = th.target(REF, MAPPING, (SPR_BOX[0], SPR_BOX[1], SPR_BOX[2], 24), mirror=REF_MIRROR)
+    head, tgt = head[8:], tgt[8:]                              # rows -4..23 (the window above is off the ref)
     hd = Image.fromarray(head, 'RGBA'); hd = hd.resize((hd.width * z, hd.height * z), Image.NEAREST)
+    tg = Image.fromarray(tgt).convert('RGBA'); tg = tg.resize((tg.width * z, tg.height * z), Image.NEAREST)
     H = hd.height
-    refs = []
-    for fn, box in (('00_Ep363HitsugayaProfile.png', (60, 0, 560, 470)), ('01_Ep257HitsugayaProfile.png', (0, 0, 762, 700))):
-        r = Image.open(f'refs/redraw/hitsugaya/{fn}').convert('RGBA').crop(box)
-        refs.append(r.resize((round(r.width * H / r.height), H), Image.LANCZOS))
-    W = hd.width + sum(r.width for r in refs) + 80
-    c = Image.new('RGBA', (W, H + 40), (213, 225, 237, 255)); x = 20
-    for im in [hd] + refs:
-        c.alpha_composite(im, (x, 20)); x += im.width + 20
+    # same window of the reference, unpixelated
+    (ax, ay), (bx, by) = MAPPING.back(SPR_BOX[0], SPR_BOX[1] + 8), MAPPING.back(SPR_BOX[2], 24)
+    r = Image.open(REF).convert('RGBA').transpose(Image.FLIP_LEFT_RIGHT) if REF_MIRROR else Image.open(REF).convert('RGBA')
+    r = r.crop((int(ax), int(max(0, ay)), int(bx), int(by)))
+    r = r.resize((round(r.width * H / r.height), H), Image.LANCZOS)
+    f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 20)
+    W = r.width + tg.width + hd.width + 80
+    c = Image.new('RGBA', (W, H + 60), (213, 225, 237, 255)); d = ImageDraw.Draw(c); x = 20
+    for im, lab in ((r, 'ref 00 (mirrored)'), (tg, 'pixelated target'), (hd, 'our head')):
+        c.alpha_composite(im, (x, 20)); d.text((x, H + 28), lab, fill=(30, 30, 40), font=f); x += im.width + 20
     c.convert('RGB').save(path)
 
 
