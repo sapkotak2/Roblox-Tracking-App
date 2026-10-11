@@ -29,13 +29,14 @@ from PIL import Image, ImageDraw, ImageFont
 
 T = 'out/style/tanjiro_clean.png'
 OUT = 'out/style/hitsugaya.png'
-OX, OY = 4, 4       # padding left (scabbard + back spikes) and top (hair spikes)
+OX, OY = 8, 8       # padding left (back spikes, sheath) and top (tall hair)
 CHOSEN = 'cool-serious'
+POSE = 'composed'    # 'composed' (v3: arms crossed, sword sheathed on the back) or 'tanjiro' (v2)
 
 K = {
     '#': (26, 21, 33),
     # white hair
-    'W': (240, 244, 250), 'S': (200, 210, 228), 'U': (150, 164, 194), 'V': (112, 124, 156),
+    'W': (246, 246, 252), 'S': (208, 208, 230), 'U': (168, 168, 204), 'V': (128, 128, 170),   # Killua/Gojo-style
     # skin
     'c': (248, 212, 173), 'l': (226, 175, 140), 'u': (183, 124, 102),
     # eyes
@@ -60,20 +61,24 @@ K = {
 SKIN = [(248, 212, 173), (246, 210, 182), (226, 175, 140), (183, 124, 102)]
 
 # big swept spikes: (base point a, base point b, tip) in template coordinates (y may be negative)
+# One-directional mass: big spikes sweeping UP and BACK (to the upper left), longest at the crown and back.
 SPIKES = [
-    ((8, 3), (16, 2), (11, -4)),     # crown, straight up
-    ((3, 6), (10, 2), (0, -3)),      # up and back
-    ((1, 5), (3, 12), (-4, 4)),      # back, high
-    ((1, 9), (3, 15), (-3, 13)),     # back, low
-    ((14, 2), (22, 4), (21, -3)),    # front, up
-    ((20, 4), (25, 10), (27, 1)),    # front, over the brow
+    ((16, 2), (24, 6), (20, -7)),    # front of the crown, up
+    ((9, 1), (18, 2), (9, -8)),      # crown, tallest, up and back
+    ((3, 4), (11, 1), (-2, -6)),     # upper back
+    ((0, 6), (5, 3), (-7, -1)),      # back, rising
+    ((0, 7), (1, 13), (-8, 7)),      # back
+    ((0, 12), (2, 17), (-7, 15)),    # back, low
+    ((3, 15), (6, 19), (-1, 22)),    # side spike behind the ear, down and back
+    ((21, 4), (25, 9), (28, 2)),     # small front flick over the brow
 ]
-CLUMPS = [((11, 6), (5, 11)), ((8, 12), (4, 17))]   # two soft clump lines in the dome   # strand lines in the dome
+CLUMPS = [((13, 4), (5, 9)), ((9, 9), (3, 14))]   # two soft clump lines in the dome
 
-# face skin rows (template coords): list of inclusive x ranges. Everything else in the head is hair.
-FACE = {11: [(12, 13), (20, 21)], 12: [(11, 15), (19, 23)], 13: [(11, 15), (19, 23)],
-        14: [(11, 16), (18, 23)], 15: [(11, 23)], 16: [(11, 23)], 17: [(11, 23)], 18: [(11, 23)],
-        19: [(11, 23)], 20: [(11, 23)], 21: [(11, 22)]}
+# face skin rows (template coords): inclusive x ranges. Everything else in the head is hair: jagged locks over
+# the forehead, his long centre lock down between the eyes (x 16-17), a front lock framing the face (x 24).
+FACE = {11: [(13, 14), (20, 21)], 12: [(12, 15), (19, 22)], 13: [(11, 15), (18, 23)],
+        14: [(11, 15), (18, 23)], 15: [(11, 15), (18, 23)], 16: [(11, 16), (18, 23)], 17: [(11, 23)],
+        18: [(11, 23)], 19: [(11, 23)], 20: [(11, 23)], 21: [(11, 22)]}
 EAR = {18: [(7, 9)], 19: [(6, 9)], 20: [(6, 9)], 21: [(7, 9)]}
 
 # face options: (x, y, rows) in template coords; '?' keeps. Eyes built like Tanjiro's: brow row 14,
@@ -138,6 +143,60 @@ STAR = (24, 26, [   # four-point star tsuba at the base of the blade
     '???y???', '???Y???', '??yYy??', 'yYYYYYy', '??yYy??', '???Y???', '???y???'])
 
 
+# v3 pose: small and composed, upright with arms crossed (near forearm on top, hands tucked), Hyorinmaru
+# sheathed on his back: hilt + gold star guard over the shoulder, sash across the chest holding it.
+# Shorter legs than Tanjiro (he is small): feet end at row 53. Absolute template rows, (x, 'pixels') segments.
+COMPOSED = {
+    22: [(6, '#HHh')],
+    23: [(6, '#HHhKKK'), (19, 'wKK#')],
+    24: [(5, '#HHHHHHHhKKKwKKK#')],
+    25: [(4, '#HHHHqGHhKKwKK#KKKL#')],
+    26: [(4, '#HHHHHqGgKwKKK#KKKL#')],
+    27: [(4, '#HHHHh#qGgKKKK#KKKL#')],
+    28: [(4, '#HHHh#KKqCgKKK#KKLL#')],
+    29: [(4, '#HHh###########KKLL#')],
+    30: [(4, '#HhH#ccKKKKKKKKKKKKL#')],
+    31: [(4, '#HhH#lcKKKKKKKKKKKLL#')],
+    32: [(4, '#HhH#K###########cc#')],
+    33: [(4, '#HhH#KKKKKKKKKKKKlc#')],
+    34: [(4, '#HHh#ZKKK#####KKLL#')],
+    35: [(4, '#HHh#ZKK#KKKqG#KKL#')],
+    36: [(4, '#HHh##Z#KKKKKqG#L#')],
+    37: [(4, '#HHh#hHHHHHHHHHHhh#')],
+    38: [(4, '#HHh#hhhhhhhhhhhhh#')],
+    39: [(4, '#HHHh#ZKKKKLZKKKKKL#')],
+    40: [(3, '#HHHHh#ZKKKKL#ZKKKKL#')],
+    41: [(3, '#HHhHh#ZKKKKL#ZKKKKKL#')],
+    42: [(3, '#HHHhHh#ZKKKL#ZKKKKKL#')],
+    43: [(2, '#HHhHhHh#ZKKKL#ZKKKKKKL#')],
+    44: [(2, '#HHHhHHh#ZKKKKL#ZKKKKKL#')],
+    45: [(2, '#jHHhHHhh#ZKKKL#ZKKKKKL#')],
+    46: [(2, '#jjhhhhhjj#ZKKL#ZKKKKL#')],
+    47: [(2, '##########ZKKKL#ZKKKKL#')],
+    48: [(11, '#ZKKL#ZKKKKL#')],
+    49: [(10, '#ZKKKL#ZKKKKL#')],
+    50: [(10, '#HHh#'), (17, '#HHHh#')],
+    51: [(9, '#HHHHh#'), (17, '#HHHHHh#')],
+    52: [(8, '#RRRRRRr#'), (16, '#RRRRRRRr#')],
+    53: [(8, '#' * 9), (16, '#' * 10)],
+}
+HILT = (-1, 14, [   # hilt (blue-grey wrap with diamond marks) up and back over the shoulder, gold star guard
+    '##.......',
+    '#nn#.....',
+    '#nXn#....',
+    '.#nXn#...',
+    '..#nXn#..',
+    '...#nXn#.',
+    '...yYy##.',
+    '..yYYYy..',
+    '...yYy...',
+    '....y....'])
+SHEATH = (-2, 23, [  # sheath under everything, from the guard down the back, tip below the haori
+    '......##', '.....#NM', '.....#NM', '....#NM#', '....#NM#', '...#NM#.', '...#NM#.', '...#NM#.',
+    '..#NM#..', '..#NM#..', '..#NM#..', '.#NM#...', '.#NM#...', '.#NM#...', '#NM#....', '#NM#....',
+    '#NM#....', '#NM#....', '#NM#....', '.##.....'])
+
+
 def check():
     for i, r in enumerate(BODY):
         assert len(r) == 30, ('BODY', i + 22, len(r))
@@ -190,11 +249,22 @@ def build_head(img):
     # Tanjiro's hair mass (inner pixels only, not his outline), minus the new face
     hair = opaque & head_box & ~is_outline & ~is_skin & ~face & ~ear
     hair &= ~((tx >= 24) & (ty >= 19)) & ~((tx <= 8) & (ty >= 21))         # earrings
-    hair |= head_box & (ty >= 8) & (ty <= 17) & (tx == 24)                  # front side lock
+    hair |= head_box & (ty >= 8) & (ty <= 18) & (tx == 24)                  # front side lock
     for a, b, c in SPIKES:
         tri(hair, a, b, c, OX, OY)
     hair &= ~face & ~ear
     hair &= ~((ty >= 17) & (tx <= 4)) & ~((ty >= 19) & (tx <= 5))          # short nape
+    # fill enclosed gaps between spikes (anything transparent not reachable from the canvas edge)
+    free = ~hair & ~face & ~ear
+    reach = np.zeros_like(free); reach[0, :] = free[0, :]; reach[:, 0] |= free[:, 0]; reach[:, -1] |= free[:, -1]
+    while True:
+        grown = reach.copy()
+        grown[1:] |= reach[:-1]; grown[:-1] |= reach[1:]; grown[:, 1:] |= reach[:, :-1]; grown[:, :-1] |= reach[:, 1:]
+        grown &= free
+        if (grown == reach).all():
+            break
+        reach = grown
+    hair |= free & ~reach & (ty <= 21) & (tx <= 27)
     for _ in range(2):                                        # fill pinholes between spikes (read as noise)
         n4 = sum(np.roll(hair, d, ax) for d in (-1, 1) for ax in (0, 1))
         hair |= ~hair & (n4 >= 3) & ~face & ~ear & (ty <= 21)
@@ -259,9 +329,22 @@ def recolour_t(img, mapping, box):
     se.recolour(img, mapping, (x0 + OX, y0 + OY, x1 + OX, y1 + OY))
 
 
-def build(face=CHOSEN):
+def build(face=CHOSEN, pose=POSE):
     check()
     img = se.pad(se.load(T), left=OX, top=OY, bottom=1)
+    if pose == 'composed':
+        chin = img[22 + OY:24 + OY, 10 + OX:24 + OX].copy()
+        img[22 + OY:] = 0; img[14 + OY:22 + OY, 26 + OX:] = 0          # drop Tanjiro's body and sword
+        img[22 + OY:24 + OY, 10 + OX:24 + OX] = chin
+        img = build_head(img)
+        for x, y, rows in FACES[face]:
+            se.patch(img, x + OX, y + OY, rows, K)
+        spec = {y + OY: [(x + OX, t) for x, t in v] for y, v in COMPOSED.items()}
+        se.patch(img, 0, 24 + OY, se.seg_rows(img.shape[1], {y - 24 - OY: v for y, v in spec.items() if y >= 24 + OY}), K)
+        se.patch(img, 0, 22 + OY, se.seg_rows(img.shape[1], {y - 22 - OY: v for y, v in spec.items() if y < 24 + OY}, fill='?'), K)
+        se.patch(img, HILT[0] + OX, HILT[1] + OY, HILT[2], K)
+        se.patch_under(img, SHEATH[0] + OX, SHEATH[1] + OY, SHEATH[2], K)
+        return se.crop_to_content(img)
     # sword: teal-tinted blade, blue-grey hilt and pommel
     recolour_t(img, {(46, 46, 54): K['B'], (196, 190, 201): K['X'], (200, 205, 216): K['X'],
                      (87, 89, 102): K['A']}, (23, 14, 45, 31))
@@ -286,7 +369,7 @@ def build(face=CHOSEN):
 
 def faces_sheet(path, z=12):
     f = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf', 22)
-    heads = [(n, build(n)[0:OY + 26, 0:OX + 30]) for n in FACES]
+    heads = [(n, build(n, pose='tanjiro')[0:OY + 26, 0:OX + 30]) for n in FACES]
     W = sum(h.shape[1] * z + 40 for _, h in heads) + 40
     H = heads[0][1].shape[0] * z + 70
     c = Image.new('RGBA', (W, H), (213, 225, 237, 255)); d = ImageDraw.Draw(c); x = 40
@@ -302,5 +385,5 @@ def faces_sheet(path, z=12):
 if __name__ == '__main__':
     img = build()
     se.save(img, OUT)
-    se.zoom([se.load(T), img], 'out/style/hitsugaya_check.png', z=10)
+    se.zoom([se.crop_to_content(build(pose='tanjiro')), img], 'out/style/hitsugaya_check.png', z=10)  # old | new
     faces_sheet('out/style/hitsugaya_faces.png')

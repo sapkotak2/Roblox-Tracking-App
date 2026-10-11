@@ -106,3 +106,34 @@ def zoom(imgs, path, z=8, gap=2, bg=(213, 225, 237, 255)):
         c.alpha_composite(im.resize((im.width * z, im.height * z), Image.NEAREST), (x * z, (H - a.shape[0]) * z))
         x += a.shape[1] + gap
     c.save(path)
+
+
+def seg_rows(width, spec, fill='.'):
+    """build ASCII rows from {row_index: [(x, 'string'), ...]} on a `fill` background (no column counting)"""
+    out = []
+    for y in range(max(spec) + 1):
+        r = [fill] * width
+        for x, s in spec.get(y, []):
+            for i, ch in enumerate(s):
+                if 0 <= x + i < width:
+                    r[x + i] = ch
+        out.append(''.join(r))
+    return out
+
+
+def blade(img, p0, p1, core, hi, outline=OUTLINE, guard=None):
+    """2-px blade from p0 to p1 (highlight on the upper side), outlined where the sprite is transparent"""
+    (x0, y0), (x1, y1) = p0, p1
+    n = max(abs(x1 - x0), abs(y1 - y0))
+    pts = [(round(x0 + (x1 - x0) * t / n), round(y0 + (y1 - y0) * t / n)) for t in range(n + 1)]
+    own = set()
+    for i, (x, y) in enumerate(pts):
+        for (xx, yy), c in (((x, y), hi), ((x + 1, y), core)):
+            if 0 <= yy < img.shape[0] and 0 <= xx < img.shape[1]:
+                img[yy, xx, :3] = c; img[yy, xx, 3] = 255; own.add((xx, yy))
+    for (x, y) in list(own):
+        for dx, dy in ((1, 0), (-1, 0), (0, 1), (0, -1)):
+            xx, yy = x + dx, y + dy
+            if (xx, yy) not in own and 0 <= yy < img.shape[0] and 0 <= xx < img.shape[1] and not img[yy, xx, 3]:
+                img[yy, xx, :3] = outline; img[yy, xx, 3] = 255
+    return img

@@ -26,6 +26,7 @@ T = 'out/style/tanjiro_clean.png'
 OUT = 'out/style/okkotsu.png'
 PADL = 3            # extra columns on the left for the sword bag
 CHOSEN = 'deadpan'
+POSE = 'relaxed'     # 'relaxed' (v3) or 'tanjiro' (v2, Tanjiro's stance; kept for the old-vs-new check)
 
 K = {
     '#': (26, 21, 33),                                    # template outline
@@ -172,6 +173,46 @@ BAG = [  # drawn UNDER everything: navy katana bag, tied top behind the head, ru
 ]
 
 
+# v3 pose: relaxed and a little slouched, feet close together, back hand in the trouser pocket (only the
+# bent elbow shows), katana hanging loosely from the front hand with the blade pointing down to the ground.
+# Rows are absolute template rows; (x, 'pixels') segments on a cleared background.
+RELAXED = {
+    22: [(6, '#WWS')],
+    23: [(6, '#WWSWWS'), (19, 'SWW#')],
+    24: [(6, '#WWSWWWWWSSSSWWYWW#')],
+    25: [(6, '#UUUUUUUUUUUUUUUUUU#')],
+    26: [(7, '#SSWGGWWWWWW#WWWWW#')],
+    27: [(7, '#SSWWGGWWWWW#WWWWS#')],
+    28: [(7, '#SSWWWGGWWWW#WWWWS#')],
+    29: [(7, '#SSWWWWGGWWW#WWWSS#')],
+    30: [(7, '#SSWWWWWGGWW#WWWSS#')],
+    31: [(6, '#SS#WWWWWWGGW#WWUSS#')],
+    32: [(5, '#SSS#WWWWWWWGG#WWUSS#')],
+    33: [(5, '#SSU#WWWWWWWWG#WWUSS#')],
+    34: [(5, '#SUU#WWWWWWWWW#WUWSS#')],
+    35: [(6, '#U#SWWWWWWWWW#WUWSS#')],
+    36: [(7, '##SWWWWWWWWU#WUWSS#')],
+    37: [(8, '#SWWWWWWWWU#SUUSU#')],
+    38: [(8, '#SSWWWWWWWY#UUUUU#')],
+    39: [(8, '#SSWWWWWWWU##ccc##')],
+    40: [(7, '#SSSWWWWWWWU#lczc#')],
+    41: [(7, '#USSSSSWWWSU#lczc#')],
+    42: [(6, '#UUSUUSSSUSSUU#zzz#')],
+    43: [(6, '##############')],
+    44: [(9, '#ZKKKLZKKKKL#'), (14, 'WW')],
+    45: [(9, '#ZKKKL#ZKKKL#'), (14, 'S')],
+    **{y: [(9, '#ZKKKL#ZKKKL#')] for y in range(46, 50)},
+    **{y: [(9, '#ZKKKL#'), (16, '#ZKKKL#')] for y in range(50, 55)},    # front leg steps out a little
+    55: [(9, '#WWWW#'), (16, '#WWWW#')],
+    56: [(8, '#WWWWWS#'), (16, '#WWWWWWS#')],
+    57: [(8, '#EQQQQQ#'), (16, '#EQQQQQQ#')],
+    58: [(8, '#' * 8), (16, '#' * 9)],
+}
+RELAXED_BLADE = ((22, 43), (35, 56))
+SLOUCH = 1          # rows from 31 down sit 1 px further back than the shoulders: head pushed forward, slouch
+RELAXED = {y: ([(x - SLOUCH, t) for x, t in v] if y >= 31 else v) for y, v in RELAXED.items()}
+
+
 def check():
     for i, r in enumerate(HEAD):
         assert len(r) == 28, ('HEAD', i, len(r))
@@ -181,9 +222,24 @@ def check():
         assert len(r) == 30, ('FEET', i + 55, len(r))
 
 
-def build(face=CHOSEN):
+def build(face=CHOSEN, pose=POSE):
     check()
     img = se.pad(se.load(T), bottom=1)                 # one extra row for the sneaker soles' outline
+    if pose == 'relaxed':
+        img[22:] = 0; img[14:22, 26:] = 0              # drop Tanjiro's whole body and sword
+        chin = se.load(T)[22:24, 10:24]
+        img[22:24, 10:24] = chin
+        se.patch(img, 0, 0, HEAD, K)
+        for x, y, rows in FACES[face]:
+            se.patch(img, x, y, rows, K)
+        rows = se.seg_rows(img.shape[1], {y - 22: v for y, v in RELAXED.items() if y >= 24})
+        se.patch(img, 0, 24, rows[2:], K)
+        se.patch(img, 0, 22, se.seg_rows(img.shape[1], {y - 22: v for y, v in RELAXED.items() if y < 24}, fill='?'), K)
+        se.blade(img, *RELAXED_BLADE, K['k'], K['X'])
+        img = se.pad(img, left=PADL)
+        for x, y, rows in BAG:
+            se.patch_under(img, x + PADL, y, rows, K)
+        return img
     # katana: black nichirin blade -> silver; hilt wrap -> dark navy; pommel -> steel
     se.recolour(img, {(46, 46, 54): K['k'], (196, 190, 201): K['X'], (200, 205, 216): K['X'],
                       (87, 89, 102): K['m']}, (23, 14, 45, 31))
@@ -221,6 +277,6 @@ def faces_sheet(path, z=12):
 if __name__ == '__main__':
     img = build()
     se.save(img, OUT)
-    se.zoom([se.load(T), img], 'out/style/okkotsu_check.png', z=10)
+    se.zoom([build(pose='tanjiro'), img], 'out/style/okkotsu_check.png', z=10)   # old pose | new pose
     faces_sheet('out/style/okkotsu_faces.png')
     print(se.dump(img, K)[0])
